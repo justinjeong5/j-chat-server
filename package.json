@@ -1,0 +1,25 @@
+{
+  "name": "j-chat-server",
+  "version": "1.0.0",
+  "description": "server to j-chat",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/justinjeong5/j-chat-server.git"
+  },
+  "keywords": [
+    "j-chat"
+  ],
+  "author": "justinjeong5",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/justinjeong5/j-chat-server/issues"
+  },
+  "homepage": "https://github.com/justinjeong5/j-chat-server#readme",
+  "dependencies": {
+    "express": "^4.18.2"
+  }
+}
