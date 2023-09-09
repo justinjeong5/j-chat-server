@@ -1,0 +1,17 @@
+# Ignore artifacts:
+build
+coverage
+
+**/.git
+**/.svn
+**/.hg
+**/node_modules
+
+**/.git
+**/.svn
+**/.hg
+
+.vscode/*
+*.md
+package-lock.json
+next-env.d.ts
