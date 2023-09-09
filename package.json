@@ -1,25 +1,48 @@
 {
-  "name": "j-chat-server",
-  "version": "1.0.0",
-  "description": "server to j-chat",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/justinjeong5/j-chat-server.git"
-  },
-  "keywords": [
-    "j-chat"
-  ],
-  "author": "justinjeong5",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/justinjeong5/j-chat-server/issues"
-  },
-  "homepage": "https://github.com/justinjeong5/j-chat-server#readme",
-  "dependencies": {
-    "express": "^4.18.2"
-  }
+    "name": "j-chat-server",
+    "version": "1.0.0",
+    "description": "server to j-chat",
+    "main": "index.js",
+    "scripts": {
+        "dev": "npx nodemon",
+        "build": "rimraf ./build && tsc",
+        "test": "npm run lint && npm run prettier",
+        "lint": "eslint \"**/*.+(js|ts)\"",
+        "lint:fix": "eslint --fix \"**/*.+(js|ts)\"",
+        "prettier": "prettier --check \"**/*.+(js|ts|json|yml|yaml|md)\"",
+        "prettier:fix": "prettier --write \"**/*.+(js|ts|json|yml|yaml|md)\""
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/justinjeong5/j-chat-server.git"
+    },
+    "keywords": [
+        "j-chat"
+    ],
+    "author": "justinjeong5",
+    "license": "ISC",
+    "bugs": {
+        "url": "https://github.com/justinjeong5/j-chat-server/issues"
+    },
+    "homepage": "https://github.com/justinjeong5/j-chat-server#readme",
+    "dependencies": {
+        "@types/express": "^4.17.17",
+        "express": "^4.18.2"
+    },
+    "devDependencies": {
+        "@types/node": "^20.6.0",
+        "@typescript-eslint/eslint-plugin": "^6.6.0",
+        "@typescript-eslint/parser": "^6.6.0",
+        "eslint": "^8.49.0",
+        "eslint-config-airbnb": "^19.0.4",
+        "eslint-config-airbnb-typescript": "^17.1.0",
+        "eslint-config-prettier": "^9.0.0",
+        "eslint-plugin-prettier": "^5.0.0",
+        "eslint-plugin-simple-import-sort": "^10.0.0",
+        "nodemon": "^3.0.1",
+        "prettier": "3.0.3",
+        "rimraf": "^5.0.1",
+        "ts-node": "^10.9.1",
+        "typescript": "^5.2.2"
+    }
 }
