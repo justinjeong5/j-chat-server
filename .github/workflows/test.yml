@@ -1,0 +1,30 @@
+name: Test
+
+on:
+    pull_request:
+        types:
+            - opened
+            - synchronize
+
+jobs:
+    test:
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Checkout Repository
+              uses: actions/checkout@v2
+
+            - name: Install Nodejs
+              uses: actions/setup-node@v2
+              with:
+                  node-version: "18"
+
+            - name: Install Package
+              run: npm install
+
+            - name: Execute Lint
+              run: npm run lint
+
+            - name: Execute Prettier
+              run: npm run prettier
+
