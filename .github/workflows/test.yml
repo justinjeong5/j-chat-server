@@ -27,4 +27,3 @@ jobs:
 
             - name: Execute Prettier
               run: npm run prettier
-

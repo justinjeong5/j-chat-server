@@ -6,16 +6,11 @@
     },
     "parser": "@typescript-eslint/parser",
     "parserOptions": {
-        "ecmaVersion": "latest"
+        "ecmaVersion": "latest",
+        "project": "./tsconfig.json"
     },
-    "ignorePatterns": [
-        "node_modules/"
-    ],
-    "plugins": [
-        "@typescript-eslint",
-        "prettier",
-        "simple-import-sort"
-    ],
+    "ignorePatterns": ["node_modules/"],
+    "plugins": ["@typescript-eslint", "prettier", "simple-import-sort"],
     "extends": [
         "airbnb",
         "airbnb-typescript",
@@ -23,14 +18,8 @@
         "plugin:prettier/recommended"
     ],
     "rules": {
-        "semi": [
-            "error",
-            "always"
-        ],
-        "quotes": [
-            "error",
-            "double"
-        ],
+        "semi": ["error", "always"],
+        "quotes": ["error", "double"],
         "no-trailing-spaces": "error",
         "no-unused-vars": "error",
         "@typescript-eslint/no-explicit-any": "warn",
