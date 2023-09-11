@@ -1,5 +1,7 @@
 /* eslint-disable import/no-extraneous-dependencies */
 import bodyParser from "body-parser";
+import cookieParser from "cookie-parser";
+import cors from "cors";
 import dotenv from "dotenv";
 import express from "express";
 import mongoose from "mongoose";
@@ -22,6 +24,13 @@ mongoose
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
+app.use(cookieParser());
+app.use(
+    cors({
+        origin: "http://localhost:3000",
+        credentials: true,
+    }),
+);
 
 initRouter(app);
 
