@@ -2,7 +2,11 @@ import dotenv from "dotenv";
 import express from "express";
 import { MongoClient, ServerApiVersion } from "mongodb";
 
+import initRouter from "../routes";
+
 dotenv.config();
+const app = express();
+const port = 3005;
 
 const client = new MongoClient(process.env.MONGODB_URL as string, {
     serverApi: {
@@ -28,8 +32,7 @@ async function run() {
 }
 run().catch(console.dir);
 
-const app = express();
-const port = 3005;
+initRouter(app);
 
 app.get("/", (req, res) => {
     res.send("Hello World!");
