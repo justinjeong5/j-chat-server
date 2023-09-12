@@ -1,12 +1,8 @@
-/* eslint-disable import/no-extraneous-dependencies */
-import bodyParser from "body-parser";
-import cookieParser from "cookie-parser";
-import cors from "cors";
+import initMiddleware from "@middlewares/index";
+import initRouter from "@routes/index";
 import dotenv from "dotenv";
 import express from "express";
 import mongoose from "mongoose";
-
-import initRouter from "../routes";
 
 dotenv.config();
 const app = express();
@@ -22,16 +18,10 @@ mongoose
         console.error(error);
     });
 
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(bodyParser.json());
-app.use(cookieParser());
-app.use(
-    cors({
-        origin: "http://localhost:3000",
-        credentials: true,
-    }),
-);
+console.log("Intializing Middlewares");
+initMiddleware(app);
 
+console.log("Intializing Routers");
 initRouter(app);
 
 app.get("/", (req, res) => {
