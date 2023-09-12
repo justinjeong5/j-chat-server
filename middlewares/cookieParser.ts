@@ -1,6 +1,7 @@
 import cookieParser from "cookie-parser";
+import { Application } from "express";
 
-const cookieParserMiddleware = (app: any) => {
+const cookieParserMiddleware = (app: Application): void => {
     app.use(cookieParser());
 };
 

@@ -1,10 +1,9 @@
-import express from "express";
-
-import User from "../models/User";
+import User from "@models/User";
+import express, { Request, Response } from "express";
 
 const R = express();
 
-R.get("/users", async (req, res) => {
+R.get("/users", async (req: Request, res: Response) => {
     const docs = await User.find();
 
     res.status(200).json({
@@ -12,7 +11,7 @@ R.get("/users", async (req, res) => {
     });
 });
 
-R.post("/users", async (req, res) => {
+R.post("/users", async (req: Request, res: Response) => {
     const { username, email, password, avatar } = req.body;
     const userExist = await User.find({ username }).exec();
 

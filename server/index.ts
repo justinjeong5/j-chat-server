@@ -1,11 +1,11 @@
 import initMiddleware from "@middlewares/index";
 import initRouter from "@routes/index";
 import dotenv from "dotenv";
-import express from "express";
+import express, { Application } from "express";
 import mongoose from "mongoose";
 
+const app: Application = express();
 dotenv.config();
-const app = express();
 
 mongoose
     .connect(process.env.MONGODB_URL, {
