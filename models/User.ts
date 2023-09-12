@@ -24,5 +24,6 @@ const userSchema = new Schema({
 });
 
 const User = mongoose.model("User", userSchema);
+User.watch().on("change", data => console.log(new Date(), data));
 
 export default User;
