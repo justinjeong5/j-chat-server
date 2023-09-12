@@ -16,7 +16,7 @@
             "@routes*": ["routes/*"],
             "@server*": ["server/*"],
             "@types*": ["types/*"]
-        },
+        }
     },
     "ts-node": {
         "require": ["tsconfig-paths/register"]
