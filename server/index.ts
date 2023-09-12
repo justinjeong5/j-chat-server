@@ -5,24 +5,28 @@ import dotenv from "dotenv";
 import express, { Application } from "express";
 
 (async () => {
-    const app: Application = express();
-    dotenv.config();
+    try {
+        const app: Application = express();
+        dotenv.config();
 
-    console.log("Initializing Database...");
-    await initDatabase();
+        console.log("Initializing Database...");
+        await initDatabase();
 
-    console.log("Initializing Middlewares...");
-    initMiddleware(app);
+        console.log("Initializing Middlewares...");
+        initMiddleware(app);
 
-    console.log("Initializing Routers...");
-    initRouter(app);
+        console.log("Initializing Routers...");
+        initRouter(app);
 
-    app.get("/", (req, res) => {
-        res.send("Hello World!");
-    });
+        app.get("/", (req, res) => {
+            res.send("Hello World!");
+        });
 
-    const port = process.env.PORT || 3005;
-    app.listen(port, () => {
-        console.log(`Server listening on port ${port}`);
-    });
+        const port = process.env.PORT || 3005;
+        app.listen(port, () => {
+            console.log(`Server listening on port ${port}`);
+        });
+    } catch (err) {
+        console.error(err);
+    }
 })();

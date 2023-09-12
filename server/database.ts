@@ -1,15 +1,11 @@
-import mongoose from "mongoose";
+import mongoose, { Mongoose } from "mongoose";
 
-const initDatabase = (): Promise<any> =>
-    mongoose
-        .connect(process.env.MONGODB_URL, {
-            dbName: process.env.MONGODB_DB_NAME,
-        })
-        .then(() => {
-            console.log("successfully connected to database");
-        })
-        .catch(error => {
-            console.error(error);
-        });
+const initDatabase = async (): Promise<Mongoose> => {
+    const connect = await mongoose.connect(process.env.MONGODB_URL, {
+        dbName: process.env.MONGODB_DB_NAME,
+    });
+    console.log("successfully connected to database");
+    return connect;
+};
 
 export default initDatabase;
