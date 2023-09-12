@@ -1,3 +1,4 @@
+import History from "@models/History";
 import User from "@models/User";
 import express, { Request, Response } from "express";
 
@@ -19,6 +20,17 @@ R.patch(
         }
         await User.findOneAndUpdate({ id: user.id }, req.body);
         const doc = await User.findOne({ id: user.id });
+        await (
+            await History.create({
+                user_id: user.id,
+                model: "User",
+                model_id: user.id,
+                path: req.path,
+                method: "PATCH",
+                status: "200",
+                response: JSON.stringify(doc),
+            })
+        ).save();
         res.status(200).json({ data: doc });
     },
 );
