@@ -14,7 +14,8 @@
             "@middlewares*": ["middlewares/*"],
             "@models*": ["models/*"],
             "@routes*": ["routes/*"],
-            "@server*": ["server/*"]
+            "@server*": ["server/*"],
+            "@types*": ["types/*"]
         },
     },
     "ts-node": {
