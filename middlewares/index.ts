@@ -9,6 +9,7 @@ const initMiddleware = (app: Application): void => {
     cookieParser(app);
     cors(app);
     errorHandler(app);
+    console.log("successfully loaded middlewares");
 };
 
 export default initMiddleware;
