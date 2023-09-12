@@ -1,3 +1,4 @@
+import Logger from "@lib/logger";
 import History from "@models/History";
 import User from "@models/User";
 import express, { Request, Response } from "express";
@@ -11,6 +12,7 @@ R.post("/login", async (req: Request, res: Response): Promise<void> => {
 R.patch(
     "/users/:userId",
     async (req: Request, res: Response): Promise<void> => {
+        Logger.info({ method: "PATCH", url: req.originalUrl, body: req.body });
         const user = await User.findOne({ _id: req.params.userId }).exec();
         if (!user) {
             res.status(404).json({
@@ -25,7 +27,7 @@ R.patch(
                 user_id: user.id,
                 model: "User",
                 model_id: user.id,
-                path: req.path,
+                url: req.originalUrl,
                 method: "PATCH",
                 status: "200",
                 response: JSON.stringify(doc),
@@ -36,6 +38,7 @@ R.patch(
 );
 
 R.get("/users/:userId", async (req: Request, res: Response): Promise<void> => {
+    Logger.info({ method: "GET", url: req.originalUrl });
     const user = await User.findOne({ _id: req.params.userId }).exec();
     if (!user) {
         res.status(404).json({

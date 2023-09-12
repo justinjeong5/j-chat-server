@@ -1,15 +1,12 @@
-import mongoose from "mongoose";
+import Logger from "@lib/logger";
+import mongoose, { Mongoose } from "mongoose";
 
-const initDatabase = (): Promise<any> =>
-    mongoose
-        .connect(process.env.MONGODB_URL, {
-            dbName: process.env.MONGODB_DB_NAME,
-        })
-        .then(() => {
-            console.log("successfully connected to database");
-        })
-        .catch(error => {
-            console.error(error);
-        });
+const initDatabase = async (): Promise<Mongoose> => {
+    const connection = await mongoose.connect(process.env.MONGODB_URL, {
+        dbName: process.env.MONGODB_DB_NAME,
+    });
+    Logger.done("successfully connected to mongodb");
+    return connection;
+};
 
 export default initDatabase;

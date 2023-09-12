@@ -11,6 +11,7 @@
         "resolveJsonModule": true,
         "baseUrl": ".",
         "paths": {
+            "@lib*": ["lib/*"],
             "@middlewares*": ["middlewares/*"],
             "@models*": ["models/*"],
             "@routes*": ["routes/*"],
