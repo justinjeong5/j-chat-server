@@ -3,27 +3,31 @@ import express, { Request, Response } from "express";
 
 const R = express();
 
+R.post("/login", async (req: Request, res: Response): Promise<void> => {
+    res.send(200);
+});
+
 R.patch(
     "/users/:userId",
     async (req: Request, res: Response): Promise<void> => {
-        const [user] = await User.find({ _id: req.params.userId }).exec();
+        const user = await User.findOne({ _id: req.params.userId }).exec();
         if (!user) {
             res.status(404).json({
-                message: "User not found",
+                msg: "User not found",
             });
             return;
         }
         await User.findOneAndUpdate({ id: user.id }, req.body);
-        const [user3] = await User.find({ id: user.id });
-        res.status(200).json({ data: user3 });
+        const doc = await User.findOne({ id: user.id });
+        res.status(200).json({ data: doc });
     },
 );
 
 R.get("/users/:userId", async (req: Request, res: Response): Promise<void> => {
-    const [user] = await User.find({ _id: req.params.userId }).exec();
+    const user = await User.findOne({ _id: req.params.userId }).exec();
     if (!user) {
         res.status(404).json({
-            message: "User not found",
+            msg: "User not found",
         });
         return;
     }
@@ -32,23 +36,16 @@ R.get("/users/:userId", async (req: Request, res: Response): Promise<void> => {
 });
 
 R.post("/users", async (req: Request, res: Response): Promise<void> => {
-    const { username, email, password, avatar } = req.body;
-    const userExist = await User.find({ username }).exec();
+    const user = await User.findOne({ email: req.body.email }).exec();
 
-    if (userExist.length) {
+    if (!user) {
         res.status(400).json({
-            message: "User already exists",
+            msg: "User already exists",
         });
         return;
     }
 
-    const user = await User.create({
-        username,
-        email,
-        password,
-        avatar,
-    });
-    const doc = await user.save();
+    const doc = (await User.create(req.body)).save();
     res.status(201).json({
         data: doc,
     });
