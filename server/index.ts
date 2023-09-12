@@ -1,3 +1,4 @@
+import Logger from "@lib/logger";
 import initMiddleware from "@middlewares/index";
 import initRouter from "@routes/index";
 import initDatabase from "@server/database";
@@ -5,24 +6,28 @@ import dotenv from "dotenv";
 import express, { Application } from "express";
 
 (async () => {
-    const app: Application = express();
-    dotenv.config();
+    try {
+        const app: Application = express();
+        dotenv.config();
 
-    console.log("Initializing Database...");
-    await initDatabase();
+        Logger.init("Initializing Database...");
+        await initDatabase();
 
-    console.log("Initializing Middlewares...");
-    initMiddleware(app);
+        Logger.init("Initializing Middlewares...");
+        initMiddleware(app);
 
-    console.log("Initializing Routers...");
-    initRouter(app);
+        Logger.init("Initializing Routers...");
+        initRouter(app);
 
-    app.get("/", (req, res) => {
-        res.send("Hello World!");
-    });
+        app.get("/", (req, res) => {
+            res.send("Hello World!");
+        });
 
-    const port = process.env.PORT || 3005;
-    app.listen(port, () => {
-        console.log(`Server listening on port ${port}`);
-    });
+        const port = process.env.PORT || 3005;
+        app.listen(port, () => {
+            Logger.init(`Server listening on port ${port}`);
+        });
+    } catch (err) {
+        Logger.error(err);
+    }
 })();

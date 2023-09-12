@@ -1,3 +1,4 @@
+import Logger from "@lib/logger";
 import bodyParser from "@middlewares/bodyParser";
 import cookieParser from "@middlewares/cookieParser";
 import cors from "@middlewares/cors";
@@ -9,7 +10,7 @@ const initMiddleware = (app: Application): void => {
     cookieParser(app);
     cors(app);
     errorHandler(app);
-    console.log("successfully loaded middlewares");
+    Logger.done("successfully loaded middlewares");
 };
 
 export default initMiddleware;
