@@ -38,7 +38,7 @@ R.get("/users/:userId", async (req: Request, res: Response): Promise<void> => {
 R.post("/users", async (req: Request, res: Response): Promise<void> => {
     const user = await User.findOne({ email: req.body.email }).exec();
 
-    if (!user) {
+    if (user) {
         res.status(400).json({
             msg: "User already exists",
         });
