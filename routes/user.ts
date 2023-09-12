@@ -1,37 +1,73 @@
-import express from "express";
-
-import User from "../models/User";
+import History from "@models/History";
+import User from "@models/User";
+import express, { Request, Response } from "express";
 
 const R = express();
 
-R.get("/users", async (req, res) => {
-    const docs = await User.find();
-
-    res.status(200).json({
-        data: docs,
-    });
+R.post("/login", async (req: Request, res: Response): Promise<void> => {
+    res.send(200);
 });
 
-R.post("/users", async (req, res) => {
-    const { username, email, password, avatar } = req.body;
-    const userExist = await User.find({ username }).exec();
+R.patch(
+    "/users/:userId",
+    async (req: Request, res: Response): Promise<void> => {
+        const user = await User.findOne({ _id: req.params.userId }).exec();
+        if (!user) {
+            res.status(404).json({
+                msg: "User not found",
+            });
+            return;
+        }
+        await User.findOneAndUpdate({ id: user.id }, req.body);
+        const doc = await User.findOne({ id: user.id });
+        await (
+            await History.create({
+                user_id: user.id,
+                model: "User",
+                model_id: user.id,
+                path: req.path,
+                method: "PATCH",
+                status: "200",
+                response: JSON.stringify(doc),
+            })
+        ).save();
+        res.status(200).json({ data: doc });
+    },
+);
 
-    if (userExist.length) {
-        res.status(400).json({
-            message: "User already exists",
+R.get("/users/:userId", async (req: Request, res: Response): Promise<void> => {
+    const user = await User.findOne({ _id: req.params.userId }).exec();
+    if (!user) {
+        res.status(404).json({
+            msg: "User not found",
         });
         return;
     }
 
-    const user = await User.create({
-        username,
-        email,
-        password,
-        avatar,
-    });
-    const doc = await user.save();
+    res.status(200).json({ data: user });
+});
+
+R.post("/users", async (req: Request, res: Response): Promise<void> => {
+    const user = await User.findOne({ email: req.body.email }).exec();
+
+    if (user) {
+        res.status(400).json({
+            msg: "User already exists",
+        });
+        return;
+    }
+
+    const doc = (await User.create(req.body)).save();
     res.status(201).json({
         data: doc,
+    });
+});
+
+R.get("/users", async (req: Request, res: Response): Promise<void> => {
+    const docs = await User.find();
+
+    res.status(200).json({
+        data: docs,
     });
 });
 

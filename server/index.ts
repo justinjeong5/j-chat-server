@@ -1,35 +1,28 @@
-/* eslint-disable import/no-extraneous-dependencies */
-import bodyParser from "body-parser";
+import initMiddleware from "@middlewares/index";
+import initRouter from "@routes/index";
+import initDatabase from "@server/database";
 import dotenv from "dotenv";
-import express from "express";
-import mongoose from "mongoose";
+import express, { Application } from "express";
 
-import initRouter from "../routes";
+(async () => {
+    const app: Application = express();
+    dotenv.config();
 
-dotenv.config();
-const app = express();
+    console.log("Initializing Database...");
+    await initDatabase();
 
-mongoose
-    .connect(process.env.MONGODB_URL, {
-        dbName: process.env.MONGODB_DB_NAME,
-    })
-    .then(() => {
-        console.log("successfully connected to database");
-    })
-    .catch(error => {
-        console.error(error);
+    console.log("Initializing Middlewares...");
+    initMiddleware(app);
+
+    console.log("Initializing Routers...");
+    initRouter(app);
+
+    app.get("/", (req, res) => {
+        res.send("Hello World!");
     });
 
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(bodyParser.json());
-
-initRouter(app);
-
-app.get("/", (req, res) => {
-    res.send("Hello World!");
-});
-
-const port = 3005;
-app.listen(port, () => {
-    console.log(`Example app listening on port ${port}`);
-});
+    const port = process.env.PORT || 3005;
+    app.listen(port, () => {
+        console.log(`Server listening on port ${port}`);
+    });
+})();
