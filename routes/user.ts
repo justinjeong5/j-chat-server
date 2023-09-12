@@ -70,7 +70,7 @@ R.get("/users", async (req: Request, res: Response): Promise<void> => {
     const docs = await User.find();
 
     res.status(200).json({
-        data: docs,
+        results: docs, count: docs.length ,
     });
 });
 
