@@ -1,14 +1,58 @@
+/* eslint-disable no-underscore-dangle */
 import isFalsy from "@lib/compare/isFalsy";
 import isValidObjectId from "@lib/compare/isValidObjectId";
 import Logger from "@lib/logger";
 import History from "@models/History";
 import User from "@models/User";
+import bcrypt from "bcryptjs";
 import express, { Request, Response } from "express";
+import jwt from "jsonwebtoken";
 
 const R = express();
 
+R.post("/signup", async (req: Request, res: Response): Promise<void> => {
+    const user = await User.findOne({ email: req.body.email });
+
+    if (user) {
+        res.status(400).json({ error: "User already exists" });
+        return;
+    }
+
+    const doc = await (await User.create(req.body)).save();
+
+    res.json(doc.toObject());
+});
+
 R.post("/login", async (req: Request, res: Response): Promise<void> => {
-    res.send(200);
+    const userFound = await User.findOne({ email: req.body.email });
+
+    if (!userFound) {
+        res.status(400).json({ error: "User not found" });
+        return;
+    }
+
+    const isMatchedPassword = await bcrypt.compare(
+        req.body.password,
+        userFound.password,
+    );
+
+    if (!isMatchedPassword) {
+        res.status(400).json({ error: "Invalid password" });
+        return;
+    }
+
+    const token = jwt.sign({ userId: userFound._id }, process.env.JWT_SECRET, {
+        expiresIn: "24h",
+    });
+
+    res.cookie("token", token, {
+        httpOnly: true,
+        secure: true,
+        sameSite: "strict",
+        maxAge: 24 * 3600,
+    });
+
+    res.json({ token, user: userFound.toObject() });
 });
 
 R.patch(
