@@ -27,6 +27,6 @@ jobs:
 
             - name: Execute Prettier
               run: npm run prettier
-              
+
             - name: Execute Jest
               run: npm run jest
