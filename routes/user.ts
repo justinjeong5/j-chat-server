@@ -33,7 +33,7 @@ R.patch(
                 response: JSON.stringify(doc),
             })
         ).save();
-        res.status(200).json({ data: doc });
+        res.status(200).json(doc);
     },
 );
 
@@ -47,7 +47,7 @@ R.get("/users/:userId", async (req: Request, res: Response): Promise<void> => {
         return;
     }
 
-    res.status(200).json({ data: user });
+    res.status(200).json(user);
 });
 
 R.post("/users", async (req: Request, res: Response): Promise<void> => {
@@ -61,9 +61,7 @@ R.post("/users", async (req: Request, res: Response): Promise<void> => {
     }
 
     const doc = (await User.create(req.body)).save();
-    res.status(201).json({
-        data: doc,
-    });
+    res.status(201).json(doc);
 });
 
 R.get("/users", async (req: Request, res: Response): Promise<void> => {

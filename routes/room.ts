@@ -29,7 +29,7 @@ R.patch(
                 response: JSON.stringify(doc),
             })
         ).save();
-        res.status(200).json({ data: doc });
+        res.status(200).json(doc);
     },
 );
 
@@ -43,7 +43,7 @@ R.get("/rooms/:roomId", async (req: Request, res: Response): Promise<void> => {
         return;
     }
 
-    res.status(200).json({ data: room });
+    res.status(200).json(room);
 });
 
 R.post("/rooms", async (req: Request, res: Response): Promise<void> => {
@@ -57,9 +57,7 @@ R.post("/rooms", async (req: Request, res: Response): Promise<void> => {
     }
 
     const doc = (await Room.create(req.body)).save();
-    res.status(201).json({
-        data: doc,
-    });
+    res.status(201).json(doc);
 });
 
 R.get("/rooms", async (req: Request, res: Response): Promise<void> => {
