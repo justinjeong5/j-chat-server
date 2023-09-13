@@ -3,6 +3,8 @@ import bodyParser from "@middlewares/bodyParser";
 import cookieParser from "@middlewares/cookieParser";
 import cors from "@middlewares/cors";
 import errorHandler from "@middlewares/errorHandler";
+import requestCasing from "@middlewares/requestCasing";
+import responseCasing from "@middlewares/responseCasing";
 import { Application } from "express";
 
 const initMiddleware = (app: Application): void => {
@@ -10,6 +12,9 @@ const initMiddleware = (app: Application): void => {
     cookieParser(app);
     cors(app);
     errorHandler(app);
+    requestCasing(app);
+    responseCasing(app);
+
     Logger.done("successfully loaded middlewares");
 };
 

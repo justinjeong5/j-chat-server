@@ -19,8 +19,9 @@ import express, { Application } from "express";
         Logger.init("Initializing Routers...");
         initRouter(app);
 
-        app.get("/", (req, res) => {
-            res.send("Hello World!");
+        app.use((req, res, next) => {
+            const err = new Error("Not Found");
+            next({ ...err, status: 404 });
         });
 
         const port = process.env.PORT || 3005;

@@ -1,3 +1,5 @@
+import isFalsy from "@lib/compare/isFalsy";
+import isValidObjectId from "@lib/compare/isValidObjectId";
 import Logger from "@lib/logger";
 import History from "@models/History";
 import User from "@models/User";
@@ -12,6 +14,20 @@ R.post("/login", async (req: Request, res: Response): Promise<void> => {
 R.patch(
     "/users/:userId",
     async (req: Request, res: Response): Promise<void> => {
+        if (isFalsy(req.params.userId)) {
+            res.status(400).json({
+                msg: "User ID is required",
+            });
+            return;
+        }
+
+        if (!isValidObjectId(req.params.userId)) {
+            res.status(400).json({
+                msg: "User ID is not valid",
+            });
+            return;
+        }
+
         Logger.info({ method: "PATCH", url: req.originalUrl, body: req.body });
         const user = await User.findOne({ _id: req.params.userId }).exec();
         if (!user) {
@@ -33,11 +49,25 @@ R.patch(
                 response: JSON.stringify(doc),
             })
         ).save();
-        res.status(200).json(doc);
+        res.status(200).json(doc.toObject());
     },
 );
 
 R.get("/users/:userId", async (req: Request, res: Response): Promise<void> => {
+    if (isFalsy(req.params.userId)) {
+        res.status(400).json({
+            msg: "User ID is required",
+        });
+        return;
+    }
+
+    if (!isValidObjectId(req.params.userId)) {
+        res.status(400).json({
+            msg: "User ID is not valid",
+        });
+        return;
+    }
+
     Logger.info({ method: "GET", url: req.originalUrl });
     const user = await User.findOne({ _id: req.params.userId }).exec();
     if (!user) {
@@ -47,7 +77,7 @@ R.get("/users/:userId", async (req: Request, res: Response): Promise<void> => {
         return;
     }
 
-    res.status(200).json(user);
+    res.status(200).json(user.toObject());
 });
 
 R.post("/users", async (req: Request, res: Response): Promise<void> => {
@@ -60,15 +90,15 @@ R.post("/users", async (req: Request, res: Response): Promise<void> => {
         return;
     }
 
-    const doc = (await User.create(req.body)).save();
-    res.status(201).json(doc);
+    const doc = await (await User.create(req.body)).save();
+    res.status(201).json(doc.toObject());
 });
 
 R.get("/users", async (req: Request, res: Response): Promise<void> => {
     const docs = await User.find();
 
     res.status(200).json({
-        results: docs,
+        results: docs.map(doc => doc.toObject()),
         count: docs.length,
     });
 });
