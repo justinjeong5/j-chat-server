@@ -1,3 +1,5 @@
+import isFalsy from "@lib/compare/isFalsy";
+import isValidObjectId from "@lib/compare/isValidObjectId";
 import Logger from "@lib/logger";
 import History from "@models/History";
 import Room from "@models/Room";
@@ -8,6 +10,20 @@ const R = express();
 R.patch(
     "/rooms/:roomId",
     async (req: Request, res: Response): Promise<void> => {
+        if (isFalsy(req.params.roomId)) {
+            res.status(400).json({
+                msg: "Room ID is required",
+            });
+            return;
+        }
+
+        if (!isValidObjectId(req.params.roomId)) {
+            res.status(400).json({
+                msg: "Room ID is not valid",
+            });
+            return;
+        }
+
         Logger.info({ method: "PATCH", url: req.originalUrl, body: req.body });
         const room = await Room.findOne({ _id: req.params.roomId }).exec();
         if (!room) {
@@ -29,11 +45,25 @@ R.patch(
                 response: JSON.stringify(doc),
             })
         ).save();
-        res.status(200).json({ data: doc });
+        res.status(200).json(doc.toObject());
     },
 );
 
 R.get("/rooms/:roomId", async (req: Request, res: Response): Promise<void> => {
+    if (isFalsy(req.params.roomId)) {
+        res.status(400).json({
+            msg: "Room ID is required",
+        });
+        return;
+    }
+
+    if (!isValidObjectId(req.params.roomId)) {
+        res.status(400).json({
+            msg: "Room ID is not valid",
+        });
+        return;
+    }
+
     Logger.info({ method: "GET", url: req.originalUrl });
     const room = await Room.findOne({ _id: req.params.roomId }).exec();
     if (!room) {
@@ -42,8 +72,7 @@ R.get("/rooms/:roomId", async (req: Request, res: Response): Promise<void> => {
         });
         return;
     }
-
-    res.status(200).json({ data: room });
+    res.status(200).json(room.toObject());
 });
 
 R.post("/rooms", async (req: Request, res: Response): Promise<void> => {
@@ -56,17 +85,15 @@ R.post("/rooms", async (req: Request, res: Response): Promise<void> => {
         return;
     }
 
-    const doc = (await Room.create(req.body)).save();
-    res.status(201).json({
-        data: doc,
-    });
+    const doc = await (await Room.create(req.body)).save();
+    res.status(201).json(doc.toObject());
 });
 
 R.get("/rooms", async (req: Request, res: Response): Promise<void> => {
     const docs = await Room.find();
 
     res.status(200).json({
-        results: docs,
+        results: docs.map(doc => doc.toObject()),
         count: docs.length,
     });
 });

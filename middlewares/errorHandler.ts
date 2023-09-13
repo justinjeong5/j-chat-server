@@ -1,3 +1,5 @@
+/* eslint-disable no-unused-vars */
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { Application, NextFunction, Request, Response } from "express";
 
 import { Error } from "../types/error.type";
@@ -9,8 +11,7 @@ const errorHandlerMiddleware = (app: Application): void => {
             msg: err.msg || "ERROR.UNKNOWN",
         };
 
-        res.status(error.status).send({ error });
-        next(error);
+        res.status(error.status || 500).send(error);
     });
 };
 
