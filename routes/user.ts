@@ -2,6 +2,7 @@
 import isFalsy from "@lib/compare/isFalsy";
 import isValidObjectId from "@lib/compare/isValidObjectId";
 import Logger from "@lib/logger";
+import auth from "@middlewares/auth";
 import History from "@models/History";
 import User from "@models/User";
 import bcrypt from "bcryptjs";
@@ -9,6 +10,14 @@ import express, { Request, Response } from "express";
 import jwt from "jsonwebtoken";
 
 const R = express();
+
+interface IRequestWithUser extends Request {
+    user: object;
+}
+
+R.get("/init", async (req: IRequestWithUser, res: Response): Promise<void> => {
+    res.json(req.user);
+});
 
 R.post("/signup", async (req: Request, res: Response): Promise<void> => {
     const user = await User.findOne({ email: req.body.email });
@@ -45,7 +54,7 @@ R.post("/login", async (req: Request, res: Response): Promise<void> => {
         expiresIn: "24h",
     });
 
-    res.cookie("token", token, {
+    res.cookie("j_chat_access_token", token, {
         httpOnly: true,
         secure: true,
         sameSite: "strict",
@@ -57,6 +66,7 @@ R.post("/login", async (req: Request, res: Response): Promise<void> => {
 
 R.patch(
     "/users/:userId",
+    auth,
     async (req: Request, res: Response): Promise<void> => {
         if (isFalsy(req.params.userId)) {
             res.status(400).json({
@@ -97,34 +107,38 @@ R.patch(
     },
 );
 
-R.get("/users/:userId", async (req: Request, res: Response): Promise<void> => {
-    if (isFalsy(req.params.userId)) {
-        res.status(400).json({
-            msg: "User ID is required",
-        });
-        return;
-    }
+R.get(
+    "/users/:userId",
+    auth,
+    async (req: Request, res: Response): Promise<void> => {
+        if (isFalsy(req.params.userId)) {
+            res.status(400).json({
+                msg: "User ID is required",
+            });
+            return;
+        }
 
-    if (!isValidObjectId(req.params.userId)) {
-        res.status(400).json({
-            msg: "User ID is not valid",
-        });
-        return;
-    }
+        if (!isValidObjectId(req.params.userId)) {
+            res.status(400).json({
+                msg: "User ID is not valid",
+            });
+            return;
+        }
 
-    Logger.info({ method: "GET", url: req.originalUrl });
-    const user = await User.findOne({ _id: req.params.userId }).exec();
-    if (!user) {
-        res.status(404).json({
-            msg: "User not found",
-        });
-        return;
-    }
+        Logger.info({ method: "GET", url: req.originalUrl });
+        const user = await User.findOne({ _id: req.params.userId }).exec();
+        if (!user) {
+            res.status(404).json({
+                msg: "User not found",
+            });
+            return;
+        }
 
-    res.status(200).json(user.toObject());
-});
+        res.status(200).json(user.toObject());
+    },
+);
 
-R.post("/users", async (req: Request, res: Response): Promise<void> => {
+R.post("/users", auth, async (req: Request, res: Response): Promise<void> => {
     const user = await User.findOne({ email: req.body.email }).exec();
 
     if (user) {
@@ -138,7 +152,7 @@ R.post("/users", async (req: Request, res: Response): Promise<void> => {
     res.status(201).json(doc.toObject());
 });
 
-R.get("/users", async (req: Request, res: Response): Promise<void> => {
+R.get("/users", auth, async (req: Request, res: Response): Promise<void> => {
     const docs = await User.find();
 
     res.status(200).json({
