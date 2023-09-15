@@ -5,6 +5,7 @@ import cors from "@middlewares/cors";
 import errorHandler from "@middlewares/errorHandler";
 import requestCasing from "@middlewares/requestCasing";
 import responseCasing from "@middlewares/responseCasing";
+import routingLogger from "@middlewares/routingLogger";
 import { Application } from "express";
 
 const initMiddleware = (app: Application): void => {
@@ -14,6 +15,7 @@ const initMiddleware = (app: Application): void => {
     errorHandler(app);
     requestCasing(app);
     responseCasing(app);
+    routingLogger(app);
 
     Logger.done("successfully loaded middlewares");
 };

@@ -16,6 +16,7 @@ const authMiddleware = async (
     try {
         const decodedToken = jwt.verify(token, process.env.JWT_SECRET) as {
             userId: string;
+            exp: number;
         };
 
         const user = await User.findById(decodedToken.userId);
@@ -23,6 +24,13 @@ const authMiddleware = async (
             res.status(404).json({ message: "사용자를 찾을 수 없습니다." });
             return;
         }
+
+        const tokenExpired = new Date(decodedToken.exp * 1000);
+        if (tokenExpired < new Date()) {
+            res.status(401).json({ error: "Unauthorized" });
+            return;
+        }
+
         Object.assign(req, { user: user.toObject() });
         next();
     } catch (error) {

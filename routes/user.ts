@@ -1,7 +1,6 @@
 /* eslint-disable no-underscore-dangle */
 import isFalsy from "@lib/compare/isFalsy";
 import isValidObjectId from "@lib/compare/isValidObjectId";
-import Logger from "@lib/logger";
 import auth from "@middlewares/auth";
 import History from "@models/History";
 import User from "@models/User";
@@ -15,9 +14,13 @@ interface IRequestWithUser extends Request {
     user: object;
 }
 
-R.get("/init", async (req: IRequestWithUser, res: Response): Promise<void> => {
-    res.json(req.user);
-});
+R.get(
+    "/init",
+    auth,
+    async (req: IRequestWithUser, res: Response): Promise<void> => {
+        res.json(req.user);
+    },
+);
 
 R.post("/signup", async (req: Request, res: Response): Promise<void> => {
     const user = await User.findOne({ email: req.body.email });
@@ -36,7 +39,7 @@ R.post("/login", async (req: Request, res: Response): Promise<void> => {
     const userFound = await User.findOne({ email: req.body.email });
 
     if (!userFound) {
-        res.status(400).json({ error: "User not found" });
+        res.status(400).json({ error: "Invalid User Information" });
         return;
     }
 
@@ -46,7 +49,7 @@ R.post("/login", async (req: Request, res: Response): Promise<void> => {
     );
 
     if (!isMatchedPassword) {
-        res.status(400).json({ error: "Invalid password" });
+        res.status(400).json({ error: "Invalid User Information" });
         return;
     }
 
@@ -59,6 +62,7 @@ R.post("/login", async (req: Request, res: Response): Promise<void> => {
         secure: true,
         sameSite: "strict",
         maxAge: 24 * 3600,
+        path: "/",
     });
 
     res.json({ token, user: userFound.toObject() });
@@ -82,7 +86,6 @@ R.patch(
             return;
         }
 
-        Logger.info({ method: "PATCH", url: req.originalUrl, body: req.body });
         const user = await User.findOne({ _id: req.params.userId }).exec();
         if (!user) {
             res.status(404).json({
@@ -125,7 +128,6 @@ R.get(
             return;
         }
 
-        Logger.info({ method: "GET", url: req.originalUrl });
         const user = await User.findOne({ _id: req.params.userId }).exec();
         if (!user) {
             res.status(404).json({

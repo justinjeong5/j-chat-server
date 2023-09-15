@@ -1,6 +1,5 @@
 import isFalsy from "@lib/compare/isFalsy";
 import isValidObjectId from "@lib/compare/isValidObjectId";
-import Logger from "@lib/logger";
 import authMiddleware from "@middlewares/auth";
 import History from "@models/History";
 import Room from "@models/Room";
@@ -26,7 +25,6 @@ R.patch(
             return;
         }
 
-        Logger.info({ method: "PATCH", url: req.originalUrl, body: req.body });
         const room = await Room.findOne({ _id: req.params.roomId }).exec();
         if (!room) {
             res.status(404).json({
@@ -69,7 +67,6 @@ R.get(
             return;
         }
 
-        Logger.info({ method: "GET", url: req.originalUrl });
         const room = await Room.findOne({ _id: req.params.roomId }).exec();
         if (!room) {
             res.status(404).json({

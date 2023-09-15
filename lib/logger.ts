@@ -1,14 +1,13 @@
 import chalk from "chalk";
+import { isEmpty } from "lodash";
 
 const { log } = console;
 
-type TMethod = "GET" | "POST" | "PATCH";
 type TFieldParams = {
-    method: TMethod;
+    method: string;
     body?: object;
     url: string;
-    path?: string;
-    query?: string;
+    query?: object;
     timestamp?: Date;
 };
 
@@ -26,7 +25,6 @@ export default class Logger {
         url,
         timestamp = new Date(),
         body,
-        path,
         query,
     }: TFieldParams): void {
         log(
@@ -35,9 +33,8 @@ export default class Logger {
                 chalk.gray("[INFO]"),
                 chalk.greenBright(method),
                 chalk.yellowBright(url),
-                body && JSON.stringify(body),
-                path && JSON.stringify(path),
-                query && JSON.stringify(query),
+                !isEmpty(body) && JSON.stringify(body),
+                !isEmpty(query) && JSON.stringify(query),
             ].filter(Boolean),
         );
     }
@@ -47,7 +44,6 @@ export default class Logger {
         url,
         timestamp = new Date(),
         body,
-        path,
         query,
     }: TFieldParams): void {
         log(
@@ -56,9 +52,8 @@ export default class Logger {
                 chalk.redBright("[ERROR]"),
                 chalk.redBright(method),
                 chalk.yellowBright(url),
-                body && JSON.stringify(body),
-                path && JSON.stringify(path),
-                query && JSON.stringify(query),
+                !isEmpty(body) && JSON.stringify(body),
+                !isEmpty(query) && JSON.stringify(query),
             ].filter(Boolean),
         );
     }
