@@ -1,4 +1,5 @@
 import chalk from "chalk";
+import { format } from "date-fns";
 import { isEmpty } from "lodash";
 
 const { log } = console;
@@ -15,8 +16,8 @@ export default class Logger {
     static init(msg: string, timestamp = new Date()): void {
         log(
             ...[
-                chalk.gray(timestamp.toISOString()),
-                chalk.gray("[INIT]"),
+                chalk.gray("[init]"),
+                chalk.gray(format(timestamp, "hh:mm:ss")),
                 chalk.gray(msg),
             ],
         );
@@ -25,8 +26,8 @@ export default class Logger {
     static done(msg: string, timestamp = new Date()): void {
         log(
             ...[
-                chalk.gray(timestamp.toISOString()),
-                chalk.gray("[DONE]"),
+                chalk.gray("[done]"),
+                chalk.gray(format(timestamp, "hh:mm:ss")),
                 chalk.greenBright(msg),
             ],
         );
@@ -41,8 +42,8 @@ export default class Logger {
     }: TFieldParams): void {
         log(
             ...[
-                chalk.gray(timestamp.toISOString()),
-                chalk.gray("[INFO]"),
+                chalk.gray("[info]"),
+                chalk.gray(format(timestamp, "hh:mm:ss")),
                 chalk.greenBright(method),
                 chalk.yellowBright(url),
                 !isEmpty(body) && JSON.stringify(body),
@@ -60,8 +61,8 @@ export default class Logger {
     }: TFieldParams): void {
         log(
             ...[
-                chalk.gray(timestamp.toISOString()),
-                chalk.redBright("[ERROR]"),
+                chalk.redBright("[error]"),
+                chalk.gray(format(timestamp, "hh:mm:ss")),
                 chalk.redBright(method),
                 chalk.yellowBright(url),
                 !isEmpty(body) && JSON.stringify(body),

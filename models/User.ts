@@ -24,6 +24,13 @@ const userSchema = new Schema({
     created_at: { type: Date, default: Date.now },
 });
 
+userSchema.methods.toJSON = function () {
+    const obj = this.toObject();
+    delete obj.password;
+    delete obj.old_password;
+    return obj;
+};
+
 userSchema.pre("save", async function (next) {
     if (this.isModified("password")) {
         this.password = await bcrypt.hash(this.password, 10);
