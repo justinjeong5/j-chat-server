@@ -12,12 +12,24 @@ type TFieldParams = {
 };
 
 export default class Logger {
-    static init(msg: string): void {
-        log(chalk.gray("[INIT]"), chalk.gray(msg));
+    static init(msg: string, timestamp = new Date()): void {
+        log(
+            ...[
+                chalk.gray(timestamp.toISOString()),
+                chalk.gray("[INIT]"),
+                chalk.gray(msg),
+            ],
+        );
     }
 
-    static done(msg: string): void {
-        log(chalk.gray("[DONE]"), chalk.greenBright(msg));
+    static done(msg: string, timestamp = new Date()): void {
+        log(
+            ...[
+                chalk.gray(timestamp.toISOString()),
+                chalk.gray("[DONE]"),
+                chalk.greenBright(msg),
+            ],
+        );
     }
 
     static info({
