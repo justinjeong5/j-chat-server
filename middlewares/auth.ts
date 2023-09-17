@@ -31,7 +31,7 @@ const authMiddleware = async (
             return;
         }
 
-        Object.assign(req, { user: user.toObject() });
+        Object.assign(req, { user: user.toJSON() });
         next();
     } catch (error) {
         res.status(403).json({ error: "Invalid JWT" });

@@ -32,7 +32,7 @@ R.post("/signup", async (req: Request, res: Response): Promise<void> => {
 
     const doc = await (await User.create(req.body)).save();
 
-    res.json(doc.toObject());
+    res.json(doc.toJSON());
 });
 
 R.post("/login", async (req: Request, res: Response): Promise<void> => {
@@ -64,7 +64,7 @@ R.post("/login", async (req: Request, res: Response): Promise<void> => {
         maxAge: 24 * 3600,
     });
 
-    res.json({ token, user: userFound.toObject() });
+    res.json({ token, user: userFound.toJSON() });
 });
 
 R.patch(
@@ -105,7 +105,7 @@ R.patch(
                 response: JSON.stringify(doc),
             })
         ).save();
-        res.status(200).json(doc.toObject());
+        res.status(200).json(doc.toJSON());
     },
 );
 
@@ -135,7 +135,7 @@ R.get(
             return;
         }
 
-        res.status(200).json(user.toObject());
+        res.status(200).json(user.toJSON());
     },
 );
 
@@ -150,14 +150,14 @@ R.post("/users", auth, async (req: Request, res: Response): Promise<void> => {
     }
 
     const doc = await (await User.create(req.body)).save();
-    res.status(201).json(doc.toObject());
+    res.status(201).json(doc.toJSON());
 });
 
 R.get("/users", auth, async (req: Request, res: Response): Promise<void> => {
     const docs = await User.find();
 
     res.status(200).json({
-        results: docs.map(doc => doc.toObject()),
+        results: docs.map(doc => doc.toJSON()),
         count: docs.length,
     });
 });

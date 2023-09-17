@@ -24,12 +24,15 @@ const userSchema = new Schema({
     created_at: { type: Date, default: Date.now },
 });
 
-userSchema.methods.toJSON = function () {
-    const obj = this.toObject();
-    delete obj.password;
-    delete obj.old_password;
-    return obj;
-};
+userSchema.set("toJSON", {
+    transform(_, ret: any): any {
+        const copiedDoc = ret;
+
+        delete copiedDoc.password;
+        delete copiedDoc.old_password;
+        return copiedDoc;
+    },
+});
 
 userSchema.pre("save", async function (next) {
     if (this.isModified("password")) {

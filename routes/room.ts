@@ -45,7 +45,7 @@ R.patch(
                 response: JSON.stringify(doc),
             })
         ).save();
-        res.status(200).json(doc.toObject());
+        res.status(200).json(doc.toJSON());
     },
 );
 
@@ -74,7 +74,7 @@ R.get(
             });
             return;
         }
-        res.status(200).json(room.toObject());
+        res.status(200).json(room.toJSON());
     },
 );
 
@@ -92,7 +92,7 @@ R.post(
         }
 
         const doc = await (await Room.create(req.body)).save();
-        res.status(201).json(doc.toObject());
+        res.status(201).json(doc.toJSON());
     },
 );
 
@@ -103,7 +103,7 @@ R.get(
         const docs = await Room.find();
 
         res.status(200).json({
-            results: docs.map(doc => doc.toObject()),
+            results: docs.map(doc => doc.toJSON()),
             count: docs.length,
         });
     },
