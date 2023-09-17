@@ -62,7 +62,6 @@ R.post("/login", async (req: Request, res: Response): Promise<void> => {
         secure: true,
         sameSite: "strict",
         maxAge: 24 * 3600,
-        path: "/",
     });
 
     res.json({ token, user: userFound.toObject() });
