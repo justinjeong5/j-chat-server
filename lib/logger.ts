@@ -1,24 +1,36 @@
 import chalk from "chalk";
+import { format } from "date-fns";
+import { isEmpty } from "lodash";
 
 const { log } = console;
 
-type TMethod = "GET" | "POST" | "PATCH";
 type TFieldParams = {
-    method: TMethod;
+    method: string;
     body?: object;
     url: string;
-    path?: string;
-    query?: string;
+    query?: object;
     timestamp?: Date;
 };
 
 export default class Logger {
-    static init(msg: string): void {
-        log(chalk.gray("[INIT]"), chalk.gray(msg));
+    static init(msg: string, timestamp = new Date()): void {
+        log(
+            ...[
+                chalk.gray("[init]"),
+                chalk.gray(format(timestamp, "hh:mm:ss")),
+                chalk.gray(msg),
+            ],
+        );
     }
 
-    static done(msg: string): void {
-        log(chalk.gray("[DONE]"), chalk.greenBright(msg));
+    static done(msg: string, timestamp = new Date()): void {
+        log(
+            ...[
+                chalk.gray("[done]"),
+                chalk.gray(format(timestamp, "hh:mm:ss")),
+                chalk.greenBright(msg),
+            ],
+        );
     }
 
     static info({
@@ -26,18 +38,16 @@ export default class Logger {
         url,
         timestamp = new Date(),
         body,
-        path,
         query,
     }: TFieldParams): void {
         log(
             ...[
-                chalk.gray(timestamp.toISOString()),
-                chalk.gray("[INFO]"),
+                chalk.gray("[info]"),
+                chalk.gray(format(timestamp, "hh:mm:ss")),
                 chalk.greenBright(method),
                 chalk.yellowBright(url),
-                body && JSON.stringify(body),
-                path && JSON.stringify(path),
-                query && JSON.stringify(query),
+                !isEmpty(body) && JSON.stringify(body),
+                !isEmpty(query) && JSON.stringify(query),
             ].filter(Boolean),
         );
     }
@@ -47,18 +57,16 @@ export default class Logger {
         url,
         timestamp = new Date(),
         body,
-        path,
         query,
     }: TFieldParams): void {
         log(
             ...[
-                chalk.gray(timestamp.toISOString()),
-                chalk.redBright("[ERROR]"),
+                chalk.redBright("[error]"),
+                chalk.gray(format(timestamp, "hh:mm:ss")),
                 chalk.redBright(method),
                 chalk.yellowBright(url),
-                body && JSON.stringify(body),
-                path && JSON.stringify(path),
-                query && JSON.stringify(query),
+                !isEmpty(body) && JSON.stringify(body),
+                !isEmpty(query) && JSON.stringify(query),
             ].filter(Boolean),
         );
     }
