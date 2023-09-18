@@ -3,33 +3,33 @@ import isValidObjectId from "@lib/compare/isValidObjectId";
 import authMiddleware from "@middlewares/auth";
 import History from "@models/History";
 import Room from "@models/Room";
-import express, { Request, Response } from "express";
+import express, { NextFunction, Request, Response } from "express";
+import {
+    alreadyExist,
+    notFound,
+    parameterInvalid,
+    parameterRequired,
+} from "lib/exception/error";
 
 const R = express();
 
 R.patch(
     "/rooms/:roomId",
     authMiddleware,
-    async (req: Request, res: Response): Promise<void> => {
+    async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         if (isFalsy(req.params.roomId)) {
-            res.status(400).json({
-                msg: "Room ID is required",
-            });
+            next(parameterRequired("roomId"));
             return;
         }
 
         if (!isValidObjectId(req.params.roomId)) {
-            res.status(400).json({
-                msg: "Room ID is not valid",
-            });
+            next(parameterInvalid("roomId"));
             return;
         }
 
         const room = await Room.findOne({ _id: req.params.roomId }).exec();
         if (!room) {
-            res.status(404).json({
-                msg: "Room not found",
-            });
+            next(notFound("존재하지 않는 대화방입니다."));
             return;
         }
         await Room.findOneAndUpdate({ id: room.id }, req.body);
@@ -52,26 +52,20 @@ R.patch(
 R.get(
     "/rooms/:roomId",
     authMiddleware,
-    async (req: Request, res: Response): Promise<void> => {
+    async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         if (isFalsy(req.params.roomId)) {
-            res.status(400).json({
-                msg: "Room ID is required",
-            });
+            next(parameterRequired("roomId"));
             return;
         }
 
         if (!isValidObjectId(req.params.roomId)) {
-            res.status(400).json({
-                msg: "Room ID is not valid",
-            });
+            next(parameterInvalid("roomId"));
             return;
         }
 
         const room = await Room.findOne({ _id: req.params.roomId }).exec();
         if (!room) {
-            res.status(404).json({
-                msg: "Room not found",
-            });
+            next(notFound("존재하지 않는 대화방입니다."));
             return;
         }
         res.status(200).json(room.toJSON());
@@ -81,13 +75,11 @@ R.get(
 R.post(
     "/rooms",
     authMiddleware,
-    async (req: Request, res: Response): Promise<void> => {
+    async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         const room = await Room.findOne({ title: req.body.title }).exec();
 
         if (room) {
-            res.status(400).json({
-                msg: "Room already exists",
-            });
+            next(alreadyExist("이미 존재하는 대화방입니다."));
             return;
         }
 
