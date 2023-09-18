@@ -2,7 +2,6 @@ import Logger from "@lib/logger";
 import bodyParser from "@middlewares/bodyParser";
 import cookieParser from "@middlewares/cookieParser";
 import cors from "@middlewares/cors";
-import errorHandler from "@middlewares/errorHandler";
 import requestCasing from "@middlewares/requestCasing";
 import responseCasing from "@middlewares/responseCasing";
 import routingLogger from "@middlewares/routingLogger";
@@ -12,7 +11,6 @@ const initMiddleware = (app: Application): void => {
     bodyParser(app);
     cookieParser(app);
     cors(app);
-    errorHandler(app);
     requestCasing(app);
     responseCasing(app);
     routingLogger(app);

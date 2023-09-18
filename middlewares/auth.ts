@@ -1,6 +1,11 @@
 import User from "@models/User";
 import { NextFunction, Request, Response } from "express";
 import jwt from "jsonwebtoken";
+import {
+    notFound,
+    parameterInvalid,
+    userNotAuthenticated,
+} from "lib/exception/error";
 
 const authMiddleware = async (
     req: Request,
@@ -9,7 +14,7 @@ const authMiddleware = async (
 ): Promise<Response> => {
     const token = req.cookies.j_chat_access_token;
     if (!token) {
-        res.status(403).json({ error: "Token not provided" });
+        next(userNotAuthenticated());
         return;
     }
 
@@ -21,20 +26,20 @@ const authMiddleware = async (
 
         const user = await User.findById(decodedToken.userId);
         if (!user) {
-            res.status(404).json({ message: "사용자를 찾을 수 없습니다." });
+            next(notFound());
             return;
         }
 
         const tokenExpired = new Date(decodedToken.exp * 1000);
         if (tokenExpired < new Date()) {
-            res.status(401).json({ error: "Unauthorized" });
+            next(userNotAuthenticated());
             return;
         }
 
         Object.assign(req, { user: user.toJSON() });
-        next();
+        next(null);
     } catch (error) {
-        res.status(403).json({ error: "Invalid JWT" });
+        next(parameterInvalid("JWT"));
     }
 };
 

@@ -48,3 +48,11 @@ export const userInvalidCredentials = (message?: string): Error => {
         message,
     });
 };
+export const userNotAuthenticated = (message?: string): Error => {
+    const err = new Error("User not authenticated");
+    return Object.assign(err, {
+        status: 401,
+        code: "ERROR.USER_NOT_AUTHENTICATED",
+        message,
+    });
+};

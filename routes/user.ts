@@ -6,7 +6,7 @@ import History from "@models/History";
 import User from "@models/User";
 import UserEventLog from "@models/UserEventLog";
 import bcrypt from "bcryptjs";
-import express, { Request, Response } from "express";
+import express, { NextFunction, Request, Response } from "express";
 import jwt from "jsonwebtoken";
 import {
     alreadyExist,
@@ -32,72 +32,82 @@ R.get(
     },
 );
 
-R.post("/signup", async (req: Request, res: Response): Promise<void> => {
-    const user = await User.findOne({ email: req.body.email });
+R.post(
+    "/signup",
+    async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+        const user = await User.findOne({ email: req.body.email });
 
-    if (user) {
-        res.send(alreadyExist("이미 존재하는 이메일입니다."));
-        return;
-    }
+        if (user) {
+            next(alreadyExist("이미 존재하는 이메일입니다."));
+            return;
+        }
 
-    const doc = await (await User.create(req.body)).save();
-    await (
-        await UserEventLog.create({
-            user_id: doc._id,
-            email: doc.email,
-            action: "signup",
-        })
-    ).save();
-    res.json(doc.toJSON());
-});
-
-R.post("/login", async (req: Request, res: Response): Promise<void> => {
-    const userFound = await User.findOne({ email: req.body.email });
-
-    if (!userFound) {
-        res.send(userInvalidCredentials("로그인 정보를 다시 확인해 주세요."));
-        return;
-    }
-
-    const isMatchedPassword = await bcrypt.compare(
-        req.body.password,
-        userFound.password,
-    );
-
-    if (!isMatchedPassword) {
+        const doc = await (await User.create(req.body)).save();
         await (
             await UserEventLog.create({
-                user_id: null,
-                email: req.body.email,
-                action: "login_failed",
+                user_id: doc._id,
+                email: doc.email,
+                action: "signup",
+            })
+        ).save();
+        res.json(doc.toJSON());
+    },
+);
+
+R.post(
+    "/login",
+    async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+        const userFound = await User.findOne({ email: req.body.email });
+
+        if (!userFound) {
+            next(userInvalidCredentials("로그인 정보를 다시 확인해 주세요."));
+            return;
+        }
+
+        const isMatchedPassword = await bcrypt.compare(
+            req.body.password,
+            userFound.password,
+        );
+
+        if (!isMatchedPassword) {
+            await (
+                await UserEventLog.create({
+                    user_id: null,
+                    email: req.body.email,
+                    action: "login_failed",
+                })
+            ).save();
+
+            next(userInvalidCredentials("로그인 정보를 다시 확인해 주세요."));
+            return;
+        }
+
+        const token = jwt.sign(
+            { userId: userFound._id },
+            process.env.JWT_SECRET,
+            {
+                expiresIn: "24h",
+            },
+        );
+
+        res.cookie("j_chat_access_token", token, {
+            httpOnly: true,
+            secure: true,
+            sameSite: "strict",
+            maxAge: 24 * 3600,
+        });
+
+        await (
+            await UserEventLog.create({
+                user_id: userFound._id,
+                email: userFound.email,
+                action: "login",
             })
         ).save();
 
-        res.send(userInvalidCredentials("로그인 정보를 다시 확인해 주세요."));
-        return;
-    }
-
-    const token = jwt.sign({ userId: userFound._id }, process.env.JWT_SECRET, {
-        expiresIn: "24h",
-    });
-
-    res.cookie("j_chat_access_token", token, {
-        httpOnly: true,
-        secure: true,
-        sameSite: "strict",
-        maxAge: 24 * 3600,
-    });
-
-    await (
-        await UserEventLog.create({
-            user_id: userFound._id,
-            email: userFound.email,
-            action: "login",
-        })
-    ).save();
-
-    res.json({ token, user: userFound.toJSON() });
-});
+        res.json({ token, user: userFound.toJSON() });
+    },
+);
 
 R.post(
     "/logout",
@@ -118,22 +128,20 @@ R.post(
 R.patch(
     "/users/:userId",
     auth,
-    async (req: Request, res: Response): Promise<void> => {
+    async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         if (isFalsy(req.params.userId)) {
-            res.send(parameterRequired("userId"));
+            next(parameterRequired("userId"));
             return;
         }
 
         if (!isValidObjectId(req.params.userId)) {
-            res.send(parameterInvalid("userId"));
+            next(parameterInvalid("userId"));
             return;
         }
 
         const user = await User.findOne({ _id: req.params.userId }).exec();
         if (!user) {
-            res.send(
-                userInvalidCredentials("로그인 정보를 다시 확인해 주세요."),
-            );
+            next(userInvalidCredentials("로그인 정보를 다시 확인해 주세요."));
             return;
         }
         await User.findOneAndUpdate({ id: user.id }, req.body);
@@ -163,22 +171,20 @@ R.patch(
 R.get(
     "/users/:userId",
     auth,
-    async (req: Request, res: Response): Promise<void> => {
+    async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         if (isFalsy(req.params.userId)) {
-            res.send(parameterRequired("userId"));
+            next(parameterRequired("userId"));
             return;
         }
 
         if (!isValidObjectId(req.params.userId)) {
-            res.send(parameterInvalid("userId"));
+            next(parameterInvalid("userId"));
             return;
         }
 
         const user = await User.findOne({ _id: req.params.userId }).exec();
         if (!user) {
-            res.send(
-                userInvalidCredentials("로그인 정보를 다시 확인해 주세요."),
-            );
+            next(userInvalidCredentials("로그인 정보를 다시 확인해 주세요."));
             return;
         }
 

@@ -1,8 +1,7 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { Application, NextFunction, Request, Response } from "express";
-
-import { Error } from "../types/error.type";
+import { Error } from "types/error.type";
 
 type TErrors = Error & {
     status?: number;
@@ -15,9 +14,11 @@ const errorHandlerMiddleware = (app: Application): void => {
         const error = {
             ...err,
             code: err.code || "ERROR.UNKNOWN",
+            message: err.message,
         };
+        delete error.status;
 
-        res.status(error.status || 500).send(error);
+        res.status(err.status || 500).send(error);
     });
 };
 
