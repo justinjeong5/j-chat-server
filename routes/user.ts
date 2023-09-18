@@ -8,6 +8,12 @@ import UserEventLog from "@models/UserEventLog";
 import bcrypt from "bcryptjs";
 import express, { Request, Response } from "express";
 import jwt from "jsonwebtoken";
+import {
+    alreadyExist,
+    parameterInvalid,
+    parameterRequired,
+    userInvalidCredentials,
+} from "lib/exception/error";
 
 const R = express();
 
@@ -30,10 +36,7 @@ R.post("/signup", async (req: Request, res: Response): Promise<void> => {
     const user = await User.findOne({ email: req.body.email });
 
     if (user) {
-        res.status(400).json({
-            error: "USER_ALREADY_EXIST",
-            message: "이미 존재하는 이메일입니다.",
-        });
+        res.send(alreadyExist("이미 존재하는 이메일입니다."));
         return;
     }
 
@@ -52,10 +55,7 @@ R.post("/login", async (req: Request, res: Response): Promise<void> => {
     const userFound = await User.findOne({ email: req.body.email });
 
     if (!userFound) {
-        res.status(401).json({
-            error: "INVALID_USER",
-            message: "로그인 정보를 다시 확인해 주세요.",
-        });
+        res.send(userInvalidCredentials("로그인 정보를 다시 확인해 주세요."));
         return;
     }
 
@@ -73,10 +73,7 @@ R.post("/login", async (req: Request, res: Response): Promise<void> => {
             })
         ).save();
 
-        res.status(401).json({
-            error: "INVALID_USER",
-            message: "로그인 정보를 다시 확인해 주세요.",
-        });
+        res.send(userInvalidCredentials("로그인 정보를 다시 확인해 주세요."));
         return;
     }
 
@@ -123,24 +120,20 @@ R.patch(
     auth,
     async (req: Request, res: Response): Promise<void> => {
         if (isFalsy(req.params.userId)) {
-            res.status(400).json({
-                error: "USER_ID_REQUIRED",
-            });
+            res.send(parameterRequired("userId"));
             return;
         }
 
         if (!isValidObjectId(req.params.userId)) {
-            res.status(400).json({
-                error: "USER_ID_INVALID",
-            });
+            res.send(parameterInvalid("userId"));
             return;
         }
 
         const user = await User.findOne({ _id: req.params.userId }).exec();
         if (!user) {
-            res.status(401).json({
-                error: "INVALID_USER",
-            });
+            res.send(
+                userInvalidCredentials("로그인 정보를 다시 확인해 주세요."),
+            );
             return;
         }
         await User.findOneAndUpdate({ id: user.id }, req.body);
@@ -172,24 +165,20 @@ R.get(
     auth,
     async (req: Request, res: Response): Promise<void> => {
         if (isFalsy(req.params.userId)) {
-            res.status(400).json({
-                error: "USER_ID_REQUIRED",
-            });
+            res.send(parameterRequired("userId"));
             return;
         }
 
         if (!isValidObjectId(req.params.userId)) {
-            res.status(400).json({
-                error: "USER_ID_INVALID",
-            });
+            res.send(parameterInvalid("userId"));
             return;
         }
 
         const user = await User.findOne({ _id: req.params.userId }).exec();
         if (!user) {
-            res.status(401).json({
-                error: "INVALID_USER",
-            });
+            res.send(
+                userInvalidCredentials("로그인 정보를 다시 확인해 주세요."),
+            );
             return;
         }
 
