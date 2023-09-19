@@ -1,5 +1,6 @@
 export type Error = {
-    status: number;
+    status?: number;
     code: string;
     message?: string;
+    stack?: string;
 };
