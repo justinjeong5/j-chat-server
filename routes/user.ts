@@ -86,7 +86,7 @@ R.post(
             { userId: userFound._id },
             process.env.JWT_SECRET,
             {
-                expiresIn: "24h",
+                expiresIn: "1h",
             },
         );
 
