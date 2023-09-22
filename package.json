@@ -10,7 +10,7 @@
     "scripts": {
         "dev": "npx nodemon",
         "start": "node -r ts-node/register -r tsconfig-paths/register build/server/index.js",
-        "build": "npm i && rimraf ./build && tsc",
+        "build": "rimraf ./build && tsc",
         "jest": "jest",
         "test": "npm run lint && npm run prettier && npm run jest",
         "lint": "eslint \"**/*.+(js|ts)\"",
