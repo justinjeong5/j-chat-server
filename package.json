@@ -9,7 +9,6 @@
     },
     "scripts": {
         "dev": "npx nodemon",
-        "start:temp": "NODE_ENV=production npm run dev",
         "start": "NODE_ENV=production node -r ts-node/register -r tsconfig-paths/register ./build/server/index.js",
         "build": "rimraf ./build && tsc",
         "jest": "jest",
