@@ -1,8 +1,7 @@
+/* eslint-disable no-console */
 import chalk from "chalk";
 import { format } from "date-fns";
 import { isEmpty } from "lodash";
-
-const { log } = console;
 
 type TFieldParams = {
     method: string;
@@ -14,7 +13,7 @@ type TFieldParams = {
 
 export default class Logger {
     static init(msg: string, timestamp = new Date()): void {
-        log(
+        console.log(
             ...[
                 chalk.gray("[init]"),
                 chalk.gray(format(timestamp, "hh:mm:ss")),
@@ -24,7 +23,7 @@ export default class Logger {
     }
 
     static done(msg: string, timestamp = new Date()): void {
-        log(
+        console.log(
             ...[
                 chalk.gray("[done]"),
                 chalk.gray(format(timestamp, "hh:mm:ss")),
@@ -40,7 +39,7 @@ export default class Logger {
         body,
         query,
     }: TFieldParams): void {
-        log(
+        console.log(
             ...[
                 chalk.gray("[info]"),
                 chalk.gray(format(timestamp, "hh:mm:ss")),
@@ -59,7 +58,7 @@ export default class Logger {
         body,
         query,
     }: TFieldParams): void {
-        log(
+        console.log(
             ...[
                 chalk.redBright("[error]"),
                 chalk.gray(format(timestamp, "hh:mm:ss")),
