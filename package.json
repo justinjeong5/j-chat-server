@@ -4,7 +4,8 @@
     "description": "server to j-chat",
     "main": "index.js",
     "engines": {
-        "node": "16.13.1"
+        "node": "16.13.1",
+        "npm": "8.1.0"
     },
     "scripts": {
         "dev": "npx nodemon",
