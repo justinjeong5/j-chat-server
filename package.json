@@ -3,6 +3,9 @@
     "version": "1.0.0",
     "description": "server to j-chat",
     "main": "index.js",
+    "engines": {
+        "node": "16.13.1"
+    },
     "scripts": {
         "dev": "npx nodemon",
         "build": "rimraf ./build && tsc",
