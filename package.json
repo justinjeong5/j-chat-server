@@ -9,7 +9,7 @@
     },
     "scripts": {
         "dev": "npx nodemon",
-        "start": "NODE_ENV=production node -r ts-node/register -r tsconfig-paths/register build/server/index.js",
+        "start": "NODE_ENV=production node --require ts-node/register --require tsconfig-paths/register build/server/index.js",
         "build": "rimraf ./build && tsc",
         "jest": "jest",
         "test": "npm run lint && npm run prettier && npm run jest",
