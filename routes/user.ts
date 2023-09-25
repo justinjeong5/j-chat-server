@@ -109,7 +109,7 @@ R.post(
     async (req: IAuthRequest, res: Response): Promise<void> => {
         await (
             await UserEventLog.create({
-                user_id: req.user.id,
+                user_id: req.user._id,
                 email: req.user.email,
                 action: "logout",
             })
@@ -142,13 +142,13 @@ R.patch(
             next(userInvalidCredentials("로그인 정보를 다시 확인해 주세요."));
             return;
         }
-        await User.findOneAndUpdate({ id: user.id }, req.body);
-        const doc = await User.findOne({ id: user.id });
+        await User.findOneAndUpdate({ _id: user._id }, req.body);
+        const doc = await User.findOne({ _id: user._id });
         await (
             await History.create({
-                user_id: user.id,
+                user_id: user._id,
                 model: "User",
-                model_id: user.id,
+                model_id: user._id,
                 url: req.originalUrl,
                 method: "PATCH",
                 // status: "200",
