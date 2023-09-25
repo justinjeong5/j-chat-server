@@ -19,7 +19,11 @@ const R = express();
 R.post(
     "/rooms/:roomId/dialog",
     authMiddleware,
-    async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    async (
+        req: IAuthRequest,
+        res: Response,
+        next: NextFunction,
+    ): Promise<void> => {
         if (isFalsy(req.params.roomId)) {
             next(parameterRequired("roomId"));
             return;
