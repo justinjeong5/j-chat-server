@@ -87,7 +87,7 @@ R.post(
         res.cookie("j_chat_access_token", token, {
             httpOnly: true,
             secure: true,
-            sameSite: "strict",
+            sameSite: "lax",
             maxAge: 24 * 3600,
         });
 
