@@ -5,13 +5,14 @@ import authMiddleware from "@middlewares/auth";
 import History from "@models/History";
 import Message from "@models/Message";
 import Room from "@models/Room";
-import express, { NextFunction, Request, Response } from "express";
+import express, { NextFunction, Response } from "express";
 import {
     alreadyExist,
     notFound,
     parameterInvalid,
     parameterRequired,
 } from "lib/exception/error";
+import { IAuthRequest } from "types/response.type";
 
 const R = express();
 
@@ -61,7 +62,11 @@ R.post(
 R.patch(
     "/rooms/:roomId",
     authMiddleware,
-    async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    async (
+        req: IAuthRequest,
+        res: Response,
+        next: NextFunction,
+    ): Promise<void> => {
         if (isFalsy(req.params.roomId)) {
             next(parameterRequired("roomId"));
             return;
@@ -81,7 +86,7 @@ R.patch(
         const doc = await Room.findOne({ _id: room._id });
         await (
             await History.create({
-                // user_id: user.id,
+                user_id: req.user.id,
                 model: "Room",
                 model_id: room._id,
                 url: req.originalUrl,
@@ -97,7 +102,11 @@ R.patch(
 R.get(
     "/rooms/:roomId",
     authMiddleware,
-    async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    async (
+        req: IAuthRequest,
+        res: Response,
+        next: NextFunction,
+    ): Promise<void> => {
         if (isFalsy(req.params.roomId)) {
             next(parameterRequired("roomId"));
             return;
@@ -129,7 +138,11 @@ R.get(
 R.post(
     "/rooms",
     authMiddleware,
-    async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    async (
+        req: IAuthRequest,
+        res: Response,
+        next: NextFunction,
+    ): Promise<void> => {
         const room = await Room.findOne({ title: req.body.title }).exec();
 
         if (room) {
@@ -145,7 +158,7 @@ R.post(
 R.get(
     "/rooms",
     authMiddleware,
-    async (req: Request, res: Response): Promise<void> => {
+    async (req: IAuthRequest, res: Response): Promise<void> => {
         const docs = await Room.find();
 
         res.status(200).json({
