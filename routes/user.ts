@@ -14,20 +14,14 @@ import {
     parameterRequired,
     userInvalidCredentials,
 } from "lib/exception/error";
+import { IAuthRequest } from "types/response.type";
 
 const R = express();
-
-interface IRequestWithUser extends Request {
-    user: {
-        id: string;
-        email: string;
-    };
-}
 
 R.get(
     "/init",
     auth,
-    async (req: IRequestWithUser, res: Response): Promise<void> => {
+    async (req: IAuthRequest, res: Response): Promise<void> => {
         res.json(req.user);
     },
 );
@@ -86,7 +80,7 @@ R.post(
             { userId: userFound._id },
             process.env.JWT_SECRET,
             {
-                expiresIn: "24h",
+                expiresIn: "1h",
             },
         );
 
@@ -112,7 +106,7 @@ R.post(
 R.post(
     "/logout",
     auth,
-    async (req: IRequestWithUser, res: Response): Promise<void> => {
+    async (req: IAuthRequest, res: Response): Promise<void> => {
         await (
             await UserEventLog.create({
                 user_id: req.user.id,
@@ -128,7 +122,11 @@ R.post(
 R.patch(
     "/users/:userId",
     auth,
-    async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    async (
+        req: IAuthRequest,
+        res: Response,
+        next: NextFunction,
+    ): Promise<void> => {
         if (isFalsy(req.params.userId)) {
             next(parameterRequired("userId"));
             return;
@@ -171,7 +169,11 @@ R.patch(
 R.get(
     "/users/:userId",
     auth,
-    async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    async (
+        req: IAuthRequest,
+        res: Response,
+        next: NextFunction,
+    ): Promise<void> => {
         if (isFalsy(req.params.userId)) {
             next(parameterRequired("userId"));
             return;
@@ -192,13 +194,17 @@ R.get(
     },
 );
 
-R.get("/users", auth, async (req: Request, res: Response): Promise<void> => {
-    const docs = await User.find();
+R.get(
+    "/users",
+    auth,
+    async (req: IAuthRequest, res: Response): Promise<void> => {
+        const docs = await User.find();
 
-    res.status(200).json({
-        results: docs.map(doc => doc.toJSON()),
-        count: docs.length,
-    });
-});
+        res.status(200).json({
+            results: docs.map(doc => doc.toJSON()),
+            count: docs.length,
+        });
+    },
+);
 
 export default R;

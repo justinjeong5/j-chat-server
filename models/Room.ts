@@ -10,8 +10,8 @@ const roomSchema = new Schema({
     type: { type: String, default: "public" },
     starred: { type: Boolean, default: false },
 
-    users: { type: Array, default: [] },
-    dialog: { type: Array, default: [] },
+    users: [{ type: Schema.Types.ObjectId, ref: "User" }],
+    dialog: [{ type: Schema.Types.ObjectId, ref: "Message" }],
 
     updated_at: { type: Date, default: Date.now },
     created_at: { type: Date, default: Date.now },

@@ -17,7 +17,7 @@
             "@models*": ["models/*"],
             "@routes*": ["routes/*"],
             "@server*": ["server/*"],
-            "@types*": ["types/*"]
+            "types*": ["types/*"]
         }
     },
     "ts-node": {
