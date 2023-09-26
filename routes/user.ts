@@ -78,7 +78,7 @@ R.post(
 
         const token = generateToken({ userId: userFound._id.toString() });
         const domain =
-            process.env.NODE_ENV !== "production" ? "localhost" : "vercel.app";
+            process.env.NODE_ENV !== "production" ? "localhost" : ".vercel.app";
         res.cookie("j_chat_access_token", token, {
             httpOnly: true,
             secure: true,
