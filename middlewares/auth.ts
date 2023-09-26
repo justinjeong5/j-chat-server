@@ -1,11 +1,7 @@
+import { verifyToken } from "@lib/jsonWebToken";
 import User from "@models/User";
 import { NextFunction, Request, Response } from "express";
-import jwt from "jsonwebtoken";
-import {
-    notFound,
-    parameterInvalid,
-    userNotAuthenticated,
-} from "lib/exception/error";
+import { notFound, userNotAuthenticated } from "lib/exception/error";
 
 const authMiddleware = async (
     req: Request,
@@ -19,10 +15,7 @@ const authMiddleware = async (
     }
 
     try {
-        const decodedToken = jwt.verify(token, process.env.JWT_SECRET) as {
-            userId: string;
-            exp: number;
-        };
+        const decodedToken = verifyToken(token);
 
         const user = await User.findById(decodedToken.userId);
         if (!user) {
@@ -39,7 +32,7 @@ const authMiddleware = async (
         Object.assign(req, { user: user.toJSON() });
         next(null);
     } catch (error) {
-        next(parameterInvalid("JWT"));
+        next(userNotAuthenticated());
     }
 };
 

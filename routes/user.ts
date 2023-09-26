@@ -1,13 +1,13 @@
 /* eslint-disable no-underscore-dangle */
 import isFalsy from "@lib/compare/isFalsy";
 import isValidObjectId from "@lib/compare/isValidObjectId";
+import { generateToken } from "@lib/jsonWebToken";
 import auth from "@middlewares/auth";
 import History from "@models/History";
 import User from "@models/User";
 import UserEventLog from "@models/UserEventLog";
 import bcrypt from "bcryptjs";
 import express, { NextFunction, Request, Response } from "express";
-import jwt from "jsonwebtoken";
 import {
     alreadyExist,
     parameterInvalid,
@@ -76,14 +76,7 @@ R.post(
             return;
         }
 
-        const token = jwt.sign(
-            { userId: userFound._id },
-            process.env.JWT_SECRET,
-            {
-                expiresIn: "1h",
-            },
-        );
-
+        const token = generateToken({ userId: userFound._id.toString() });
         res.cookie("j_chat_access_token", token, {
             httpOnly: true,
             secure: true,
