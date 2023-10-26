@@ -78,14 +78,14 @@ R.post(
 
         const token = generateToken({ userId: userFound._id.toString() });
         const domain =
-            process.env.NODE_ENV !== "production"
-                ? "localhost"
-                : ".herokuapp.com";
+            process.env.NODE_ENV !== "production" ? "localhost" : ".vercel.app";
+        const secure = process.env.NODE_ENV === "production";
+
         res.cookie("j_chat_access_token", token, {
-            httpOnly: true,
-            secure: true,
-            sameSite: "lax",
             domain,
+            secure,
+            httpOnly: true,
+            sameSite: "lax",
             maxAge: 24 * 3600,
         });
 
