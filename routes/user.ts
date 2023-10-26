@@ -80,7 +80,7 @@ R.post(
         const domain =
             process.env.NODE_ENV !== "production"
                 ? "localhost"
-                : "j-chat-server-ca2746f5cceb.herokuapp.com";
+                : process.env.DOMAIN;
 
         res.cookie("j_chat_access_token", token, {
             domain,
@@ -112,7 +112,18 @@ R.post(
                 action: "logout",
             })
         ).save();
-        res.clearCookie("j_chat_access_token");
+
+        const domain =
+            process.env.NODE_ENV !== "production"
+                ? "localhost"
+                : process.env.DOMAIN;
+
+        res.cookie("j_chat_access_token", null, {
+            domain,
+            secure: true,
+            sameSite: "none",
+            maxAge: -1,
+        });
         res.json({ message: "로그아웃 되었습니다." });
     },
 );
