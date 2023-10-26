@@ -6,7 +6,7 @@ const corsMiddleware = (app: Application): void => {
         cors({
             origin: [
                 /^http:\/\/localhost/,
-                /^https:\/\/j-chat-iiu9u09mb-justinjeong5.vercel.app/,
+                /^https:\/\/j-chat-[a-z0-9-]*justinjeong5.vercel.app/,
             ],
             credentials: true,
         }),
