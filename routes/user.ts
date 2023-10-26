@@ -77,8 +77,13 @@ R.post(
         }
 
         const token = generateToken({ userId: userFound._id.toString() });
+        const domain =
+            process.env.NODE_ENV !== "production"
+                ? "localhost"
+                : process.env.DOMAIN;
 
         res.cookie("j_chat_access_token", token, {
+            domain,
             secure: true,
             sameSite: "none",
             maxAge: 24 * 3600 * 1000,
@@ -107,7 +112,18 @@ R.post(
                 action: "logout",
             })
         ).save();
-        res.clearCookie("j_chat_access_token");
+
+        const domain =
+            process.env.NODE_ENV !== "production"
+                ? "localhost"
+                : process.env.DOMAIN;
+
+        res.cookie("j_chat_access_token", null, {
+            domain,
+            secure: true,
+            sameSite: "none",
+            maxAge: -1,
+        });
         res.json({ message: "로그아웃 되었습니다." });
     },
 );
