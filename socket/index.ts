@@ -1,9 +1,10 @@
 import Logger from "@lib/logger";
+import registerChatSocket from "@socket/chat";
 import { Application } from "express";
 import { createServer } from "http";
 import { Server } from "socket.io";
 
-export default function initSocket(app: Application): void {
+export default function initSocket(app: Application): Server {
     const server = createServer(app);
     const io = new Server(server, {
         cors: {
@@ -12,17 +13,10 @@ export default function initSocket(app: Application): void {
         },
     });
     io.on("connection", client => {
-        console.log("Socket Connection", client.id);
-        client.on("submitMessage", data => {
-            console.log("Socket submitMessage", data);
-            return io.emit("returnMessage", { chat: data });
-        });
-        client.on("hello", data => {
-            console.log("Socket hello", data);
-            return io.emit("world", { chat: data });
-        });
+        registerChatSocket(client);
     });
 
     server.listen(3006);
     Logger.done("successfully loaded socket.io");
+    return io;
 }

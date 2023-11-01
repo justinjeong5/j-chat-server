@@ -14,11 +14,11 @@ import express, { Application } from "express";
         Logger.init("Initializing Database...");
         await initDatabase();
 
-        Logger.init("Initializing Middlewares...");
-        initMiddleware(app);
-
         Logger.init("Initializing Socket.io...");
-        initSocket(app);
+        const io = initSocket(app);
+
+        Logger.init("Initializing Middlewares...");
+        initMiddleware(app, io);
 
         Logger.init("Initializing Routers...");
         initRouter(app);

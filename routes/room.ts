@@ -44,8 +44,11 @@ R.post(
             await Message.create({
                 writer: req.body.writer,
                 content: req.body.content,
+                roomId: req.params.roomId,
             })
         ).save();
+        const msg = await message.populate("writer");
+        req.io.emit("returnMessage", msg);
 
         await Room.findOneAndUpdate(
             { _id: room._id },
