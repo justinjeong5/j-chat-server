@@ -1,3 +1,4 @@
+import origin from "@lib/api/cors";
 import Logger from "@lib/logger";
 import registerChatSocket from "@socket/chat";
 import { Application } from "express";
@@ -8,7 +9,7 @@ export default function initSocket(app: Application): Server {
     const server = createServer(app);
     const io = new Server(server, {
         cors: {
-            origin: "http://localhost:3000",
+            origin,
             credentials: true,
         },
     });

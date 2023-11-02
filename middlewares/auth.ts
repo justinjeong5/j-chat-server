@@ -1,4 +1,4 @@
-import { verifyToken } from "@lib/jsonWebToken";
+import { verifyToken } from "@lib/api/jsonWebToken";
 import User from "@models/User";
 import { NextFunction, Request, Response } from "express";
 import { notFound, userNotAuthenticated } from "lib/exception/error";
