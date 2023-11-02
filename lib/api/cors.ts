@@ -3,4 +3,9 @@ const origin = [
     /^https:\/\/j-chat-[a-z0-9-]*justinjeong5.vercel.app/,
 ];
 
-export default origin;
+export default {
+    origin,
+    credentials: true,
+};
+
+export { origin };

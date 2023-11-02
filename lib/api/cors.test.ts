@@ -1,4 +1,4 @@
-import origin from "./cors";
+import { origin } from "./cors";
 
 describe("origin", () => {
     it("should match localhost URLs", () => {
