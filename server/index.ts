@@ -2,6 +2,7 @@ import Logger from "@lib/logger";
 import initMiddleware from "@middlewares/index";
 import initRouter from "@routes/index";
 import initDatabase from "@server/database";
+import initSocket from "@socket/index";
 import dotenv from "dotenv";
 import express, { Application } from "express";
 
@@ -13,8 +14,11 @@ import express, { Application } from "express";
         Logger.init("Initializing Database...");
         await initDatabase();
 
+        Logger.init("Initializing Socket.io...");
+        const io = initSocket(app);
+
         Logger.init("Initializing Middlewares...");
-        initMiddleware(app);
+        initMiddleware(app, io);
 
         Logger.init("Initializing Routers...");
         initRouter(app);

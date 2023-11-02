@@ -17,6 +17,7 @@
             "@models*": ["models/*"],
             "@routes*": ["routes/*"],
             "@server*": ["server/*"],
+            "@socket*": ["socket/*"],
             "types*": ["types/*"]
         }
     },
