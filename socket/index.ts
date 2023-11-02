@@ -17,7 +17,8 @@ export default function initSocket(app: Application): Server {
         registerChatSocket(client);
     });
 
-    server.listen(3006);
+    const port = process.env.SOCKET_PORT || 3006;
+    server.listen(port);
     Logger.done("successfully loaded socket.io");
     return io;
 }
