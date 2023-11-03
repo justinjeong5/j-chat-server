@@ -1,10 +1,10 @@
 /* eslint-disable no-underscore-dangle */
 import Message from "@models/Message";
 import Room from "@models/Room";
-import { Server } from "socket.io";
+import { Server, Socket } from "socket.io";
 
-export function submitMessage(io: Server) {
-    io.on("submitMessage", async (data: any) => {
+export function submitMessage(io: Server, client: Socket) {
+    client.on("submitMessage", async (data: any) => {
         const room = await Room.findOne({ _id: data.roomId }).exec();
         if (!room) {
             io.emit("SocketError", "존재하지 않는 대화방입니다.");
@@ -22,6 +22,6 @@ export function submitMessage(io: Server) {
     });
 }
 
-export default function registerChatSocket(io: Server) {
-    submitMessage(io);
+export default function registerChatSocket(io: Server, client: Socket) {
+    submitMessage(io, client);
 }
