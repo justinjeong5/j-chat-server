@@ -1,7 +1,7 @@
 /* eslint-disable no-underscore-dangle */
+import { generateToken } from "@lib/api/jsonWebToken";
 import isFalsy from "@lib/compare/isFalsy";
 import isValidObjectId from "@lib/compare/isValidObjectId";
-import { generateToken } from "@lib/jsonWebToken";
 import auth from "@middlewares/auth";
 import History from "@models/History";
 import User from "@models/User";

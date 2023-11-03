@@ -47,8 +47,6 @@ R.post(
                 roomId: req.params.roomId,
             })
         ).save();
-        const msg = await message.populate("writer");
-        req.io.emit("returnMessage", msg);
 
         await Room.findOneAndUpdate(
             { _id: room._id },
