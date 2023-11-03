@@ -10,8 +10,8 @@ export default function initSocket(app: Application): Server {
     const io = new Server(server, {
         cors,
     });
-    io.on("connection", client => {
-        registerChatSocket(client);
+    io.on("connection", () => {
+        registerChatSocket(io);
     });
 
     const port = process.env.SOCKET_PORT || 3006;
