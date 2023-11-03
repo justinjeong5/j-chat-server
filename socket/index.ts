@@ -3,15 +3,15 @@ import Logger from "@lib/logger";
 import registerChatSocket from "@socket/chat";
 import { Application } from "express";
 import { createServer } from "http";
-import { Server } from "socket.io";
+import { Server, Socket } from "socket.io";
 
 export default function initSocket(app: Application): Server {
     const server = createServer(app);
-    const io = new Server(server, {
+    const io: Server = new Server(server, {
         cors,
     });
-    io.on("connection", () => {
-        registerChatSocket(io);
+    io.on("connection", (client: Socket) => {
+        registerChatSocket(io, client);
     });
 
     const port = process.env.SOCKET_PORT || 3006;
