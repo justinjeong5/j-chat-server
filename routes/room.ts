@@ -1,7 +1,7 @@
 /* eslint-disable no-underscore-dangle */
 import isFalsy from "@lib/compare/isFalsy";
 import isValidObjectId from "@lib/compare/isValidObjectId";
-import authMiddleware from "@middlewares/auth";
+import auth from "@middlewares/auth";
 import History from "@models/History";
 import Message from "@models/Message";
 import Room from "@models/Room";
@@ -18,7 +18,7 @@ const R = express();
 
 R.post(
     "/rooms/:roomId/dialog",
-    authMiddleware,
+    auth,
     async (
         req: IAuthRequest,
         res: Response,
@@ -66,7 +66,7 @@ R.post(
 
 R.post(
     "/rooms/:roomId/users",
-    authMiddleware,
+    auth,
     async (
         req: IAuthRequest,
         res: Response,
@@ -107,7 +107,7 @@ R.post(
 
 R.patch(
     "/rooms/:roomId",
-    authMiddleware,
+    auth,
     async (
         req: IAuthRequest,
         res: Response,
@@ -147,7 +147,7 @@ R.patch(
 
 R.get(
     "/rooms/:roomId",
-    authMiddleware,
+    auth,
     async (
         req: IAuthRequest,
         res: Response,
@@ -183,7 +183,7 @@ R.get(
 
 R.post(
     "/rooms",
-    authMiddleware,
+    auth,
     async (
         req: IAuthRequest,
         res: Response,
@@ -230,13 +230,25 @@ R.post(
 
 R.get(
     "/rooms",
-    authMiddleware,
+    auth,
     async (req: IAuthRequest, res: Response): Promise<void> => {
-        const docs = await Room.find({ users: req.user._id });
+        const { page, pageSize } = req.query;
+
+        const pageNumber = parseInt(page as string, 10) || 1;
+        const itemsPerPage = parseInt(pageSize as string, 10) || 10;
+        const skip = (pageNumber - 1) * itemsPerPage;
+
+        const totalItems = await Room.countDocuments();
+        const query = req.query.users ? { users: req.query.users } : {};
+        const docs = await Room.find(query)
+            .skip(skip)
+            .limit(itemsPerPage)
+            .populate("users")
+            .exec();
 
         res.status(200).json({
             results: docs.map(doc => doc.toJSON()),
-            count: docs.length,
+            hasMore: totalItems > pageNumber * itemsPerPage,
         });
     },
 );
