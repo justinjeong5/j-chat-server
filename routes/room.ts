@@ -254,7 +254,7 @@ R.get(
 
         res.status(200).json({
             results: docs.map(doc => doc.toJSON()),
-            hasMore: totalItems > pageNumber * itemsPerPage,
+            hasMore: totalItems > skip + itemsPerPage,
         });
     },
 );
