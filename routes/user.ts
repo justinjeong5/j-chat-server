@@ -4,7 +4,6 @@ import isFalsy from "@lib/compare/isFalsy";
 import isValidObjectId from "@lib/compare/isValidObjectId";
 import auth from "@middlewares/auth";
 import History from "@models/History";
-import Room from "@models/Room";
 import User from "@models/User";
 import UserEventLog from "@models/UserEventLog";
 import bcrypt from "bcryptjs";
@@ -126,28 +125,6 @@ R.post(
             maxAge: -1,
         });
         res.json({ message: "로그아웃 되었습니다." });
-    },
-);
-
-R.get(
-    "/users/:userId/rooms",
-    auth,
-    async (
-        req: IAuthRequest,
-        res: Response,
-        next: NextFunction,
-    ): Promise<void> => {
-        if (isFalsy(req.params.userId)) {
-            next(parameterRequired("userId"));
-            return;
-        }
-
-        const docs = await Room.find({ users: req.params.userId });
-
-        res.status(200).json({
-            results: docs.map(doc => doc.toJSON()),
-            count: docs.length,
-        });
     },
 );
 

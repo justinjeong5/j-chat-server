@@ -128,8 +128,15 @@ R.patch(
             next(notFound("존재하지 않는 대화방입니다."));
             return;
         }
-        await Room.findOneAndUpdate({ _id: room._id }, req.body);
-        const doc = await Room.findOne({ _id: room._id });
+
+        const doc = await Room.findOneAndUpdate(
+            { _id: room._id },
+            { $push: req.body },
+            { new: true },
+        )
+            .populate("users")
+            .exec();
+
         await (
             await History.create({
                 user_id: req.user._id,
@@ -232,15 +239,14 @@ R.get(
     "/rooms",
     auth,
     async (req: IAuthRequest, res: Response): Promise<void> => {
-        const { page, pageSize } = req.query;
+        const { page, pageSize, ...restQuery } = req.query;
 
-        const pageNumber = parseInt(page as string, 10) || 1;
+        const pageNumber = parseInt(page as string, 10) || 0;
         const itemsPerPage = parseInt(pageSize as string, 10) || 10;
-        const skip = (pageNumber - 1) * itemsPerPage;
+        const skip = pageNumber * itemsPerPage;
 
         const totalItems = await Room.countDocuments();
-        const query = req.query.users ? { users: req.query.users } : {};
-        const docs = await Room.find(query)
+        const docs = await Room.find(restQuery)
             .skip(skip)
             .limit(itemsPerPage)
             .populate("users")
