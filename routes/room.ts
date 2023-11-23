@@ -106,7 +106,7 @@ R.post(
 );
 
 R.patch(
-    "/rooms/:roomId",
+    "/rooms/:roomId/users",
     auth,
     async (
         req: IAuthRequest,
@@ -129,12 +129,19 @@ R.patch(
             return;
         }
 
-        const doc = await Room.findOneAndUpdate(
-            { _id: room._id },
-            { $push: req.body },
-            { new: true },
-        )
+        const data = req.query.$pull
+            ? { $pull: req.body }
+            : { $push: req.body };
+
+        const doc = await Room.findOneAndUpdate({ _id: room._id }, data, {
+            new: true,
+        })
             .populate("users")
+            .populate("dialog", {
+                populate: {
+                    path: "writer",
+                },
+            })
             .exec();
 
         await (
