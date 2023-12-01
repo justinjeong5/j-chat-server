@@ -3,7 +3,6 @@ import mongoose from "mongoose";
 const { Schema } = mongoose;
 
 const messageSchema = new Schema({
-    id: Schema.Types.ObjectId,
     roomId: Schema.Types.ObjectId,
     writer: { type: Schema.Types.ObjectId, ref: "User" },
 

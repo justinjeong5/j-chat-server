@@ -6,5 +6,5 @@ export interface ISocketRequest extends Request {
 }
 
 export interface IAuthRequest extends ISocketRequest {
-    user: { _id: string; email: string };
+    user: { id: string; email: string };
 }

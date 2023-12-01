@@ -34,7 +34,7 @@ R.post(
             return;
         }
 
-        const room = await Room.findOne({ _id: req.params.roomId }).exec();
+        const room = await Room.findById(req.params.roomId).exec();
         if (!room) {
             next(notFound("존재하지 않는 대화방입니다."));
             return;
@@ -48,11 +48,10 @@ R.post(
             })
         ).save();
 
-        await Room.findOneAndUpdate(
-            { _id: room._id },
-            { $push: { dialog: message._id } },
-        );
-        const doc = await Room.findOne({ _id: room._id })
+        await Room.findByIdAndUpdate(room._id, {
+            $push: { dialog: message._id },
+        });
+        const doc = await Room.findById(room._id)
             .populate({
                 path: "dialog",
                 populate: {
@@ -82,17 +81,16 @@ R.post(
             return;
         }
 
-        const room = await Room.findOne({ _id: req.params.roomId }).exec();
+        const room = await Room.findById(req.params.roomId).exec();
         if (!room) {
             next(notFound("존재하지 않는 대화방입니다."));
             return;
         }
 
-        await Room.findOneAndUpdate(
-            { _id: room._id },
-            { $push: { users: req.user._id } },
-        );
-        const doc = await Room.findOne({ _id: room._id })
+        await Room.findByIdAndUpdate(room._id, {
+            $push: { users: req.user.id },
+        });
+        const doc = await Room.findById(room._id)
             .populate("users")
             .populate({
                 path: "dialog",
@@ -123,7 +121,7 @@ R.patch(
             return;
         }
 
-        const room = await Room.findOne({ _id: req.params.roomId }).exec();
+        const room = await Room.findById(req.params.roomId).exec();
         if (!room) {
             next(notFound("존재하지 않는 대화방입니다."));
             return;
@@ -133,7 +131,7 @@ R.patch(
             ? { $pull: req.body }
             : { $push: req.body };
 
-        const doc = await Room.findOneAndUpdate({ _id: room._id }, data, {
+        const doc = await Room.findByIdAndUpdate(room._id, data, {
             new: true,
         })
             .populate("users")
@@ -146,7 +144,7 @@ R.patch(
 
         await (
             await History.create({
-                user_id: req.user._id,
+                user_id: req.user.id,
                 model: "Room",
                 model_id: room._id,
                 url: req.originalUrl,
@@ -177,7 +175,7 @@ R.get(
             return;
         }
 
-        const room = await Room.findOne({ _id: req.params.roomId })
+        const room = await Room.findById(req.params.roomId)
             .populate("users")
             .populate({
                 path: "dialog",
@@ -214,14 +212,14 @@ R.post(
 
         const { id, ...body } = req.body;
         const room = await (
-            await Room.create({ ...body, users: [req.user._id] })
+            await Room.create({ ...body, users: [req.user.id] })
         ).save();
 
         await (
             await History.create({
-                user_id: req.user._id,
+                user_id: req.user.id,
                 model: "Room",
-                model_id: room._id,
+                model_id: room.id,
                 url: req.originalUrl,
                 method: "POST",
                 status: "201",
@@ -229,7 +227,7 @@ R.post(
             })
         ).save();
 
-        const doc = await Room.findOne({ _id: room._id })
+        const doc = await Room.findById(room._id)
             .populate("users")
             .populate("dialog", {
                 populate: {
