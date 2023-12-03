@@ -86,9 +86,9 @@ R.post(
             next(notFound("존재하지 않는 대화방입니다."));
             return;
         }
-
+        console.log("[POST] Room, users", room, req.body.users, req.user);
         await Room.findByIdAndUpdate(room._id, {
-            $push: { users: req.user.id },
+            $push: { users: req.body.users },
         });
         const doc = await Room.findById(room._id)
             .populate("users")
@@ -144,7 +144,7 @@ R.patch(
 
         await (
             await History.create({
-                user_id: req.user.id,
+                user_id: req.user._id,
                 model: "Room",
                 model_id: room._id,
                 url: req.originalUrl,
@@ -185,6 +185,8 @@ R.get(
             })
             .exec();
 
+        // TODO: 있는 방이지만 유저가 Join하지 않은 경우 핸들링하기
+
         if (!room) {
             next(notFound("존재하지 않는 대화방입니다."));
             return;
@@ -212,14 +214,14 @@ R.post(
 
         const { id, ...body } = req.body;
         const room = await (
-            await Room.create({ ...body, users: [req.user.id] })
+            await Room.create({ ...body, users: [req.user._id] })
         ).save();
 
         await (
             await History.create({
-                user_id: req.user.id,
+                user_id: req.user._id,
                 model: "Room",
-                model_id: room.id,
+                model_id: room._id,
                 url: req.originalUrl,
                 method: "POST",
                 status: "201",

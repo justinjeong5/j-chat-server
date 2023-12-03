@@ -5,6 +5,7 @@ import { Server, Socket } from "socket.io";
 
 export function submitMessage(io: Server, client: Socket) {
     client.on("submitMessage", async (data: any) => {
+        console.log("submitMessage", data);
         const { id, ...msg } = data;
         const room = await Room.findById(data.roomId).exec();
         if (!room) {

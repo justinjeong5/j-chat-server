@@ -107,7 +107,7 @@ R.post(
     async (req: IAuthRequest, res: Response): Promise<void> => {
         await (
             await UserEventLog.create({
-                user_id: req.user.id,
+                user_id: req.user._id,
                 email: req.user.email,
                 action: "logout",
             })

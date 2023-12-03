@@ -7,6 +7,7 @@ const messageSchema = new Schema({
     writer: { type: Schema.Types.ObjectId, ref: "User" },
 
     content: { type: String, default: "" },
+    type: { type: String, default: "plain" },
 
     stars: [{ type: Schema.Types.ObjectId, ref: "User" }],
     likes: [{ type: Schema.Types.ObjectId, ref: "User" }],
