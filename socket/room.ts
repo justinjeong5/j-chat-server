@@ -6,13 +6,13 @@ import User from "@models/User";
 import { Server, Socket } from "socket.io";
 import { TJoinRoom, TLeaveRoom } from "types/room.type";
 
-export function joinRoom(io: Server, socket: Socket) {
-    socket.on("joinRoom", async (data: TJoinRoom) => {
+export function joinRoom(io: Server, client: Socket) {
+    client.on("joinRoom", async (data: TJoinRoom) => {
         const room = await Room.findById(data.roomId).exec();
         if (!room) {
             io.emit("SocketError", "존재하지 않는 대화방입니다.");
         }
-        socket.join(data.roomId);
+        client.join(data.roomId);
 
         const user = await User.findById(data.userId);
         const message = await (
@@ -41,13 +41,13 @@ export function joinRoom(io: Server, socket: Socket) {
         ).save();
     });
 }
-export function leaveRoom(io: Server, socket: Socket) {
-    socket.on("leaveRoom", async (data: TLeaveRoom) => {
+export function leaveRoom(io: Server, client: Socket) {
+    client.on("leaveRoom", async (data: TLeaveRoom) => {
         const room = await Room.findById(data.roomId).exec();
         if (!room) {
-            io.emit("SocketError", "존재하지 않는 대화방입니다.");
+            client.emit("SocketError", "존재하지 않는 대화방입니다.");
         }
-        socket.leave(data.roomId);
+        client.leave(data.roomId);
 
         const user = await User.findById(data.userId);
         const message = await (
@@ -77,7 +77,7 @@ export function leaveRoom(io: Server, socket: Socket) {
     });
 }
 
-export default function registerRoomSocket(io: Server, socket: Socket) {
-    joinRoom(io, socket);
-    leaveRoom(io, socket);
+export default function registerRoomSocket(io: Server, client: Socket) {
+    joinRoom(io, client);
+    leaveRoom(io, client);
 }

@@ -86,7 +86,6 @@ R.post(
             next(notFound("존재하지 않는 대화방입니다."));
             return;
         }
-        console.log("[POST] Room, users", room, req.body.users, req.user);
         await Room.findByIdAndUpdate(room._id, {
             $push: { users: req.body.users },
         });

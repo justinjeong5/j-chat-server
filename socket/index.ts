@@ -11,9 +11,9 @@ export default function initSocket(app: Application): Server {
     const io: Server = new Server(server, {
         cors,
     });
-    io.on("connection", (socket: Socket) => {
-        registerChatSocket(io, socket);
-        registerRoomSocket(io, socket);
+    io.on("connection", (client: Socket) => {
+        registerChatSocket(io, client);
+        registerRoomSocket(io, client);
     });
 
     const port = process.env.SOCKET_PORT || 3006;
