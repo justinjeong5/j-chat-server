@@ -3,11 +3,11 @@ import mongoose from "mongoose";
 const { Schema } = mongoose;
 
 const messageSchema = new Schema({
-    id: Schema.Types.ObjectId,
     roomId: Schema.Types.ObjectId,
     writer: { type: Schema.Types.ObjectId, ref: "User" },
 
     content: { type: String, default: "" },
+    type: { type: String, default: "plain" },
 
     stars: [{ type: Schema.Types.ObjectId, ref: "User" }],
     likes: [{ type: Schema.Types.ObjectId, ref: "User" }],

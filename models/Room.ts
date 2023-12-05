@@ -3,8 +3,6 @@ import mongoose from "mongoose";
 const { Schema } = mongoose;
 
 const roomSchema = new Schema({
-    id: Schema.Types.ObjectId,
-
     title: { type: String, required: true, unique: true },
     description: { type: String, default: "" },
     type: { type: String, default: "public" },

@@ -5,23 +5,23 @@ import { Server, Socket } from "socket.io";
 
 export function submitMessage(io: Server, client: Socket) {
     client.on("submitMessage", async (data: any) => {
-        const room = await Room.findOne({ _id: data.roomId }).exec();
+        const room = await Room.findById(data.roomId).exec();
         if (!room) {
-            io.emit("SocketError", "존재하지 않는 대화방입니다.");
+            client.emit("SocketError", "존재하지 않는 대화방입니다.");
         }
+
         const message = await (
             await (await Message.create(data)).save()
         ).populate("writer");
 
-        await Room.findOneAndUpdate(
-            { _id: room._id },
-            { $push: { dialog: message._id } },
-        );
+        await Room.findByIdAndUpdate(room._id, {
+            $push: { dialog: message._id },
+        });
 
-        io.emit("returnMessage", { chat: message });
+        io.to(data.roomId).emit("returnMessage", { chat: message });
     });
 }
 
-export default function registerChatSocket(io: Server, client: Socket) {
-    submitMessage(io, client);
+export default function registerChatSocket(io: Server, socket: Socket) {
+    submitMessage(io, socket);
 }

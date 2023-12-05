@@ -1,7 +1,7 @@
 /* eslint-disable no-underscore-dangle */
 import isFalsy from "@lib/compare/isFalsy";
 import isValidObjectId from "@lib/compare/isValidObjectId";
-import authMiddleware from "@middlewares/auth";
+import auth from "@middlewares/auth";
 import History from "@models/History";
 import Message from "@models/Message";
 import Room from "@models/Room";
@@ -18,7 +18,7 @@ const R = express();
 
 R.post(
     "/rooms/:roomId/dialog",
-    authMiddleware,
+    auth,
     async (
         req: IAuthRequest,
         res: Response,
@@ -34,7 +34,7 @@ R.post(
             return;
         }
 
-        const room = await Room.findOne({ _id: req.params.roomId }).exec();
+        const room = await Room.findById(req.params.roomId).exec();
         if (!room) {
             next(notFound("존재하지 않는 대화방입니다."));
             return;
@@ -48,11 +48,10 @@ R.post(
             })
         ).save();
 
-        await Room.findOneAndUpdate(
-            { _id: room._id },
-            { $push: { dialog: message._id } },
-        );
-        const doc = await Room.findOne({ _id: room._id })
+        await Room.findByIdAndUpdate(room._id, {
+            $push: { dialog: message._id },
+        });
+        const doc = await Room.findById(room._id)
             .populate({
                 path: "dialog",
                 populate: {
@@ -66,7 +65,7 @@ R.post(
 
 R.post(
     "/rooms/:roomId/users",
-    authMiddleware,
+    auth,
     async (
         req: IAuthRequest,
         res: Response,
@@ -82,17 +81,15 @@ R.post(
             return;
         }
 
-        const room = await Room.findOne({ _id: req.params.roomId }).exec();
+        const room = await Room.findById(req.params.roomId).exec();
         if (!room) {
             next(notFound("존재하지 않는 대화방입니다."));
             return;
         }
-
-        await Room.findOneAndUpdate(
-            { _id: room._id },
-            { $push: { users: req.user._id } },
-        );
-        const doc = await Room.findOne({ _id: room._id })
+        await Room.findByIdAndUpdate(room._id, {
+            $push: { users: req.body.users },
+        });
+        const doc = await Room.findById(room._id)
             .populate("users")
             .populate({
                 path: "dialog",
@@ -106,8 +103,8 @@ R.post(
 );
 
 R.patch(
-    "/rooms/:roomId",
-    authMiddleware,
+    "/rooms/:roomId/users",
+    auth,
     async (
         req: IAuthRequest,
         res: Response,
@@ -123,13 +120,27 @@ R.patch(
             return;
         }
 
-        const room = await Room.findOne({ _id: req.params.roomId }).exec();
+        const room = await Room.findById(req.params.roomId).exec();
         if (!room) {
             next(notFound("존재하지 않는 대화방입니다."));
             return;
         }
-        await Room.findOneAndUpdate({ _id: room._id }, req.body);
-        const doc = await Room.findOne({ _id: room._id });
+
+        const data = req.query.$pull
+            ? { $pull: req.body }
+            : { $push: req.body };
+
+        const doc = await Room.findByIdAndUpdate(room._id, data, {
+            new: true,
+        })
+            .populate("users")
+            .populate("dialog", {
+                populate: {
+                    path: "writer",
+                },
+            })
+            .exec();
+
         await (
             await History.create({
                 user_id: req.user._id,
@@ -147,7 +158,7 @@ R.patch(
 
 R.get(
     "/rooms/:roomId",
-    authMiddleware,
+    auth,
     async (
         req: IAuthRequest,
         res: Response,
@@ -163,7 +174,7 @@ R.get(
             return;
         }
 
-        const room = await Room.findOne({ _id: req.params.roomId })
+        const room = await Room.findById(req.params.roomId)
             .populate("users")
             .populate({
                 path: "dialog",
@@ -172,6 +183,8 @@ R.get(
                 },
             })
             .exec();
+
+        // TODO: 있는 방이지만 유저가 Join하지 않은 경우 핸들링하기
 
         if (!room) {
             next(notFound("존재하지 않는 대화방입니다."));
@@ -183,7 +196,7 @@ R.get(
 
 R.post(
     "/rooms",
-    authMiddleware,
+    auth,
     async (
         req: IAuthRequest,
         res: Response,
@@ -215,7 +228,7 @@ R.post(
             })
         ).save();
 
-        const doc = await Room.findOne({ _id: room._id })
+        const doc = await Room.findById(room._id)
             .populate("users")
             .populate("dialog", {
                 populate: {
@@ -230,13 +243,24 @@ R.post(
 
 R.get(
     "/rooms",
-    authMiddleware,
+    auth,
     async (req: IAuthRequest, res: Response): Promise<void> => {
-        const docs = await Room.find({ users: req.user._id });
+        const { page, pageSize, ...restQuery } = req.query;
+
+        const pageNumber = parseInt(page as string, 10) || 0;
+        const itemsPerPage = parseInt(pageSize as string, 10) || 10;
+        const skip = pageNumber * itemsPerPage;
+
+        const totalItems = await Room.countDocuments();
+        const docs = await Room.find(restQuery)
+            .skip(skip)
+            .limit(itemsPerPage)
+            .populate("users")
+            .exec();
 
         res.status(200).json({
             results: docs.map(doc => doc.toJSON()),
-            count: docs.length,
+            hasMore: totalItems > skip + itemsPerPage,
         });
     },
 );

@@ -3,7 +3,6 @@ import mongoose from "mongoose";
 const { Schema } = mongoose;
 
 const historySchema = new Schema({
-    id: Schema.Types.ObjectId,
     user_id: Schema.Types.ObjectId,
     model: String,
     model_id: Schema.Types.ObjectId,

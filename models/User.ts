@@ -4,7 +4,6 @@ import mongoose from "mongoose";
 const { Schema } = mongoose;
 
 const userSchema = new Schema({
-    id: Schema.Types.ObjectId,
     role: { type: Array, default: ["common"] },
 
     email: { type: String, required: true, unique: true },
