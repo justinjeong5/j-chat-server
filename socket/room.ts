@@ -2,11 +2,17 @@
 import History from "@models/History";
 import Message from "@models/Message";
 import Room from "@models/Room";
-import User from "@models/User";
 import { Server, Socket } from "socket.io";
 import { TJoinRoom, TLeaveRoom } from "types/room.type";
 
 export function joinRoom(io: Server, client: Socket) {
+    client.on("enterRoom", async data => {
+        const room = await Room.findById(data.roomId).exec();
+        if (!room) {
+            io.emit("SocketError", "존재하지 않는 대화방입니다.");
+        }
+        client.join(data.roomId);
+    });
     client.on("joinRoom", async (data: TJoinRoom) => {
         const room = await Room.findById(data.roomId).exec();
         if (!room) {
@@ -14,12 +20,11 @@ export function joinRoom(io: Server, client: Socket) {
         }
         client.join(data.roomId);
 
-        const user = await User.findById(data.userId);
         const message = await (
             await (
                 await Message.create({
                     roomId: room._id,
-                    writer: user._id,
+                    writer: data.userId,
                     type: "joinRoom",
                 })
             ).save()
@@ -32,7 +37,7 @@ export function joinRoom(io: Server, client: Socket) {
 
         await (
             await History.create({
-                user_id: user._id,
+                user_id: data.userId,
                 model: "Room",
                 model_id: room._id,
                 method: "SOCKET",
@@ -42,6 +47,13 @@ export function joinRoom(io: Server, client: Socket) {
     });
 }
 export function leaveRoom(io: Server, client: Socket) {
+    client.on("exitRoom", async data => {
+        const room = await Room.findById(data.roomId).exec();
+        if (!room) {
+            client.emit("SocketError", "존재하지 않는 대화방입니다.");
+        }
+        client.leave(data.roomId);
+    });
     client.on("leaveRoom", async (data: TLeaveRoom) => {
         const room = await Room.findById(data.roomId).exec();
         if (!room) {
@@ -49,12 +61,11 @@ export function leaveRoom(io: Server, client: Socket) {
         }
         client.leave(data.roomId);
 
-        const user = await User.findById(data.userId);
         const message = await (
             await (
                 await Message.create({
                     roomId: room._id,
-                    writer: user._id,
+                    writer: data.userId,
                     type: "leaveRoom",
                 })
             ).save()
@@ -67,7 +78,7 @@ export function leaveRoom(io: Server, client: Socket) {
 
         await (
             await History.create({
-                user_id: user._id,
+                user_id: data.userId,
                 model: "Room",
                 model_id: room._id,
                 method: "SOCKET",
