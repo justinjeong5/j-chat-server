@@ -51,16 +51,16 @@ R.post(
 R.post(
     "/login",
     async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-        const userFound = await User.findOne({ email: req.body.email });
+        const user = await User.findOne({ email: req.body.email });
 
-        if (!userFound) {
+        if (!user) {
             next(userInvalidCredentials("로그인 정보를 다시 확인해 주세요."));
             return;
         }
 
         const isMatchedPassword = await bcrypt.compare(
             req.body.password,
-            userFound.password,
+            user.password,
         );
 
         if (!isMatchedPassword) {
@@ -76,7 +76,7 @@ R.post(
             return;
         }
 
-        const token = generateToken({ userId: userFound._id.toString() });
+        const token = generateToken({ userId: user._id.toString() });
         const domain =
             process.env.NODE_ENV !== "production"
                 ? "localhost"
@@ -89,15 +89,20 @@ R.post(
             maxAge: 24 * 3600 * 1000,
         });
 
+        await User.findByIdAndUpdate(user._id, {
+            login_stamp: Date.now(),
+            last_login: user.login_stamp,
+        }).exec();
+
         await (
             await UserEventLog.create({
-                user_id: userFound._id,
-                email: userFound.email,
+                user_id: user._id,
+                email: user.email,
                 action: "login",
             })
         ).save();
 
-        res.json({ token, user: userFound.toJSON() });
+        res.json({ token, user: user.toJSON() });
     },
 );
 
@@ -193,7 +198,13 @@ R.get(
             return;
         }
 
-        const user = await User.findById(req.params.userId).exec();
+        const user = await User.findById(req.params.userId)
+            .populate("likes")
+            .populate("comments")
+            .populate("dialog")
+            .populate("stars")
+            .exec();
+
         if (!user) {
             next(userInvalidCredentials("로그인 정보를 다시 확인해 주세요."));
             return;

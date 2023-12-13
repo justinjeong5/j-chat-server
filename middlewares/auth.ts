@@ -17,7 +17,13 @@ const authMiddleware = async (
     try {
         const decodedToken = verifyToken(token);
 
-        const user = await User.findById(decodedToken.userId);
+        const user = await User.findById(decodedToken.userId)
+            .populate("likes")
+            .populate("comments")
+            .populate("dialog")
+            .populate("stars")
+            .exec();
+
         if (!user) {
             next(notFound());
             return;

@@ -19,6 +19,7 @@ const userSchema = new Schema({
     stars: { type: Array, default: [] },
 
     last_login: { type: Date, default: Date.now },
+    login_stamp: { type: Date, default: Date.now },
     updated_at: { type: Date, default: Date.now },
     created_at: { type: Date, default: Date.now },
 });
