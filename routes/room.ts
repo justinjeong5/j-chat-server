@@ -5,6 +5,7 @@ import auth from "@middlewares/auth";
 import History from "@models/History";
 import Message from "@models/Message";
 import Room from "@models/Room";
+import User from "@models/User";
 import express, { NextFunction, Response } from "express";
 import {
     alreadyExist,
@@ -51,6 +52,10 @@ R.post(
         await Room.findByIdAndUpdate(room._id, {
             $push: { dialog: message._id },
         });
+        await User.findByIdAndUpdate(req.body.writer, {
+            $push: { dialog: message._id },
+        });
+
         const doc = await Room.findById(room._id)
             .populate({
                 path: "dialog",
@@ -89,6 +94,9 @@ R.post(
         await Room.findByIdAndUpdate(room._id, {
             $push: { users: req.body.users },
         });
+        await User.findByIdAndUpdate(req.body.users, {
+            $push: { room: room._id },
+        });
         const doc = await Room.findById(room._id)
             .populate("users")
             .populate({
@@ -126,11 +134,17 @@ R.patch(
             return;
         }
 
-        const data = req.query.$pull
+        await User.findByIdAndUpdate(
+            req.body.users,
+            req.query.$pull
+                ? { $pull: { room: room._id } }
+                : { $push: { room: room._id } },
+        );
+        const roomData = req.query.$pull
             ? { $pull: req.body }
             : { $push: req.body };
 
-        const doc = await Room.findByIdAndUpdate(room._id, data, {
+        const doc = await Room.findByIdAndUpdate(room._id, roomData, {
             new: true,
         })
             .populate("users")

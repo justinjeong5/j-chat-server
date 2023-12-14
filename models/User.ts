@@ -4,19 +4,22 @@ import mongoose from "mongoose";
 const { Schema } = mongoose;
 
 const userSchema = new Schema({
+    password: String,
+    old_password: String,
+
     role: { type: Array, default: ["common"] },
 
     email: { type: String, required: true, unique: true },
-    password: String,
-    old_password: String,
     username: { type: String, default: "" },
     description: { type: String, default: "" },
     avatar: { type: String, default: "" },
 
-    likes: { type: Array, default: [] },
-    comments: { type: Array, default: [] },
-    dialog: { type: Array, default: [] },
-    stars: { type: Array, default: [] },
+    rooms: [{ type: Schema.Types.ObjectId, ref: "Room" }],
+    stars: [{ type: Schema.Types.ObjectId, ref: "Room" }],
+
+    dialog: [{ type: Schema.Types.ObjectId, ref: "Message" }],
+    likes: [{ type: Schema.Types.ObjectId, ref: "Message" }],
+    comments: [{ type: Schema.Types.ObjectId, ref: "Message" }],
 
     last_login: { type: Date, default: Date.now },
     login_stamp: { type: Date, default: Date.now },
@@ -30,6 +33,7 @@ userSchema.set("toJSON", {
 
         delete copiedDoc.password;
         delete copiedDoc.old_password;
+        delete copiedDoc.login_stamp;
         return copiedDoc;
     },
 });
