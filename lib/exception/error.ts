@@ -1,3 +1,12 @@
+export const unknownError = (message?: string): Error => {
+    const err = new Error("Unknown error");
+    return Object.assign(err, {
+        status: 400,
+        code: "ERROR.UNKNOWN",
+        message,
+    });
+};
+
 export const parameterRequired = (
     paramName: string,
     message?: string,
@@ -48,6 +57,7 @@ export const userInvalidCredentials = (message?: string): Error => {
         message,
     });
 };
+
 export const userNotAuthenticated = (message?: string): Error => {
     const err = new Error("User not authenticated");
     return Object.assign(err, {

@@ -1,6 +1,7 @@
 /* eslint-disable no-underscore-dangle */
 import Message from "@models/Message";
 import Room from "@models/Room";
+import User from "@models/User";
 import { Server, Socket } from "socket.io";
 
 export function submitMessage(io: Server, client: Socket) {
@@ -15,6 +16,9 @@ export function submitMessage(io: Server, client: Socket) {
         ).populate("writer");
 
         await Room.findByIdAndUpdate(room._id, {
+            $push: { dialog: message._id },
+        });
+        await User.findByIdAndUpdate(message.writer._id, {
             $push: { dialog: message._id },
         });
 

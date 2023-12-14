@@ -1,7 +1,11 @@
 import { verifyToken } from "@lib/api/jsonWebToken";
 import User from "@models/User";
 import { NextFunction, Request, Response } from "express";
-import { notFound, userNotAuthenticated } from "lib/exception/error";
+import {
+    notFound,
+    unknownError,
+    userNotAuthenticated,
+} from "lib/exception/error";
 
 const authMiddleware = async (
     req: Request,
@@ -17,7 +21,14 @@ const authMiddleware = async (
     try {
         const decodedToken = verifyToken(token);
 
-        const user = await User.findById(decodedToken.userId);
+        const user = await User.findById(decodedToken.userId)
+            .populate("rooms")
+            .populate("likes")
+            .populate("dialog")
+            .populate("comments")
+            .populate("stars")
+            .exec();
+
         if (!user) {
             next(notFound());
             return;
@@ -32,7 +43,8 @@ const authMiddleware = async (
         Object.assign(req, { user: user.toJSON() });
         next(null);
     } catch (error) {
-        next(userNotAuthenticated());
+        console.error(error);
+        next(unknownError());
     }
 };
 
