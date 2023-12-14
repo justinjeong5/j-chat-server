@@ -199,6 +199,7 @@ R.get(
         }
 
         const user = await User.findById(req.params.userId)
+            .populate("rooms")
             .populate("likes")
             .populate("comments")
             .populate("dialog")
