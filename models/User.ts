@@ -45,6 +45,20 @@ userSchema.pre("save", async function (next) {
     next();
 });
 
+userSchema.pre(["updateOne", "findOneAndUpdate"], async function (next) {
+    const updatedUser = Object(this.getUpdate());
+    if (!updatedUser.password) {
+        next();
+    }
+
+    // const user = await this.findOne({ _id: updatedUser._id });
+    // this.set({ old_password: user.password });
+    const updatedPassword = await bcrypt.hash(updatedUser.password, 10);
+    this.set({ password: updatedPassword });
+    this.set({ updated_at: Date.now() });
+    next();
+});
+
 const User = mongoose.model("User", userSchema);
 User.watch().on("change", data => console.log(new Date(), data));
 
