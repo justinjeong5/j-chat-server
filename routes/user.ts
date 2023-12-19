@@ -134,7 +134,7 @@ R.post(
 );
 
 R.patch(
-    "/users/:userId",
+    "/:userId",
     auth,
     async (
         req: IAuthRequest,
@@ -156,8 +156,29 @@ R.patch(
             next(userInvalidCredentials("로그인 정보를 다시 확인해 주세요."));
             return;
         }
-        await User.findByIdAndUpdate(user._id, req.body);
-        const doc = await User.findById(user._id);
+
+        const isMatchedPassword = await bcrypt.compare(
+            req.body.password,
+            user.password,
+        );
+
+        if (!isMatchedPassword) {
+            await (
+                await UserEventLog.create({
+                    user_id: null,
+                    email: req.body.email,
+                    action: "login_failed",
+                })
+            ).save();
+
+            next(userInvalidCredentials("로그인 정보를 다시 확인해 주세요."));
+            return;
+        }
+
+        const updatedUser = await User.findByIdAndUpdate(user._id, req.body, {
+            new: true,
+        }).exec();
+
         await (
             await History.create({
                 user_id: user._id,
@@ -166,22 +187,22 @@ R.patch(
                 url: req.originalUrl,
                 method: "PATCH",
                 // status: "200",
-                response: JSON.stringify(doc),
+                response: JSON.stringify(updatedUser),
             })
         ).save();
         await (
             await UserEventLog.create({
-                user_id: doc._id,
-                email: doc.email,
+                user_id: user._id,
+                email: updatedUser.email,
                 action: "edit_info",
             })
         ).save();
-        res.status(200).json(doc.toJSON());
+        res.status(200).json(updatedUser.toJSON());
     },
 );
 
 R.get(
-    "/users/:userId",
+    "/:userId",
     auth,
     async (
         req: IAuthRequest,
