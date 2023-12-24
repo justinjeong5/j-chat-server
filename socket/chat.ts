@@ -26,6 +26,16 @@ export function submitMessage(io: Server, client: Socket) {
     });
 }
 
+export function typingMessage(io: Server, client: Socket) {
+    client.on("typingMessage", async (data: any) => {
+        io.to(data.roomId).emit("typingMessage", { user: data.username });
+    });
+    client.on("typingDone", async (data: any) => {
+        io.to(data.roomId).emit("typingDone", { user: data.username });
+    });
+}
+
 export default function registerChatSocket(io: Server, socket: Socket) {
     submitMessage(io, socket);
+    typingMessage(io, socket);
 }
