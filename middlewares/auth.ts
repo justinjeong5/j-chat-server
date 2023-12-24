@@ -1,9 +1,11 @@
-import { verifyToken } from "@lib/api/jsonWebToken";
+/* eslint-disable no-underscore-dangle */
+import { generateToken, verifyToken } from "@lib/api/jsonWebToken";
 import User from "@models/User";
 import { NextFunction, Request, Response } from "express";
 import {
     notFound,
     unknownError,
+    userAuthenticationExpired,
     userNotAuthenticated,
 } from "lib/exception/error";
 
@@ -36,9 +38,22 @@ const authMiddleware = async (
 
         const tokenExpired = new Date(decodedToken.exp * 1000);
         if (tokenExpired < new Date()) {
-            next(userNotAuthenticated());
+            next(userAuthenticationExpired());
             return;
         }
+
+        const updatedToken = generateToken({ userId: user._id.toString() });
+        const domain =
+            process.env.NODE_ENV !== "production"
+                ? "localhost"
+                : process.env.DOMAIN;
+
+        res.cookie("j_chat_access_token", updatedToken, {
+            domain,
+            secure: true,
+            sameSite: "none",
+            maxAge: 24 * 3600 * 1000,
+        });
 
         Object.assign(req, { user: user.toJSON() });
         next(null);

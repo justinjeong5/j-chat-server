@@ -66,3 +66,12 @@ export const userNotAuthenticated = (message?: string): Error => {
         message,
     });
 };
+
+export const userAuthenticationExpired = (message?: string): Error => {
+    const err = new Error("User authentication expired");
+    return Object.assign(err, {
+        status: 401,
+        code: "ERROR.USER_AUTHENTICATION_EXPIRED",
+        message,
+    });
+};
