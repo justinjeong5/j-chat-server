@@ -77,12 +77,10 @@ R.post(
         }
 
         const token = generateToken({ userId: user._id.toString() });
-        // const domain = process.env.DOMAIN;
 
         res.cookie("j_chat_access_token", token, {
-            // domain,
-            secure: true,
-            sameSite: "none",
+            domain: process.env.DOMAIN,
+            sameSite: "lax",
             maxAge: 24 * 3600 * 1000,
         });
 
@@ -115,12 +113,9 @@ R.post(
             })
         ).save();
 
-        // const domain = process.env.DOMAIN;
-
         res.cookie("j_chat_access_token", null, {
-            // domain,
-            secure: true,
-            sameSite: "none",
+            domain: process.env.DOMAIN,
+            sameSite: "lax",
             maxAge: -1,
         });
         res.json({ message: "로그아웃 되었습니다." });
