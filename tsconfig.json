@@ -1,7 +1,7 @@
 {
     "compilerOptions": {
-        "target": "es2022",
-        "lib": ["es2022", "DOM"],
+        "target": "es6",
+        "lib": ["es6", "DOM"],
         "module": "commonjs",
         "allowJs": true,
         "outDir": "build",
@@ -11,7 +11,7 @@
         "resolveJsonModule": true,
         "moduleResolution": "node",
         "types": ["node", "express", "jest"],
-        "baseUrl": ".",
+        "baseUrl": "./src",
         "paths": {
             "@lib*": ["lib/*"],
             "@middlewares*": ["middlewares/*"],
@@ -25,5 +25,6 @@
     "ts-node": {
         "require": ["tsconfig-paths/register"]
     },
-    "exclude": ["node_modules"],
+    "include": ["src/**/*", "jest.config.ts", "ecosystem.config.js"],
+    "exclude": ["node_modules"]
 }
