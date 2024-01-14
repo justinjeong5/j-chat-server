@@ -77,10 +77,10 @@ R.post(
         }
 
         const token = generateToken({ userId: user._id.toString() });
-        const domain = process.env.DOMAIN;
+        // const domain = process.env.DOMAIN;
 
         res.cookie("j_chat_access_token", token, {
-            domain,
+            // domain,
             secure: true,
             sameSite: "none",
             maxAge: 24 * 3600 * 1000,
@@ -115,10 +115,10 @@ R.post(
             })
         ).save();
 
-        const domain = process.env.DOMAIN;
+        // const domain = process.env.DOMAIN;
 
         res.cookie("j_chat_access_token", null, {
-            domain,
+            // domain,
             secure: true,
             sameSite: "none",
             maxAge: -1,
