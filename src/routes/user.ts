@@ -77,10 +77,7 @@ R.post(
         }
 
         const token = generateToken({ userId: user._id.toString() });
-        const domain =
-            process.env.NODE_ENV !== "production"
-                ? "localhost"
-                : process.env.DOMAIN;
+        const domain = process.env.DOMAIN;
 
         res.cookie("j_chat_access_token", token, {
             domain,
@@ -118,10 +115,7 @@ R.post(
             })
         ).save();
 
-        const domain =
-            process.env.NODE_ENV !== "production"
-                ? "localhost"
-                : process.env.DOMAIN;
+        const domain = process.env.DOMAIN;
 
         res.cookie("j_chat_access_token", null, {
             domain,
