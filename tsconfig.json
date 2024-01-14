@@ -10,7 +10,8 @@
         "esModuleInterop": true,
         "resolveJsonModule": true,
         "moduleResolution": "node",
-        "types": ["node", "express", "jest", "socket.io-parser", "pretty-format"],
+        "typeRoots": ["node_modules/@types", "types"],
+        "types": ["node", "express", "jest"],
         "baseUrl": ".",
         "paths": {
             "@lib*": ["lib/*"],
