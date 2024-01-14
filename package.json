@@ -12,9 +12,10 @@
         "start": "npm run build && pm2 start ecosystem.config.js --env production",
         "build": "rimraf ./build && tsc",
         "jest": "jest",
-        "test": "npm run lint && npm run prettier && npm run jest",
-        "lint": "eslint \"**/*.+(js|ts)\"",
-        "lint:fix": "eslint --fix \"**/*.+(js|ts)\"",
+        "test": "npm run lint && npm run jest",
+        "lint": "npm run prettier && npm run eslint",
+        "eslint": "eslint \"**/*.+(js|ts)\"",
+        "eslint:fix": "eslint --fix \"**/*.+(js|ts)\"",
         "prettier": "prettier --check \"**/*.+(js|ts|json|yml|yaml|md)\"",
         "prettier:fix": "prettier --write \"**/*.+(js|ts|json|yml|yaml|md)\""
     },
