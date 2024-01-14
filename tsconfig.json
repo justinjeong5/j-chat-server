@@ -1,8 +1,8 @@
 {
     "compilerOptions": {
-        "target": "es6",
+        "target": "es2022",
+        "lib": ["es2022", "DOM"],
         "module": "commonjs",
-        "lib": ["es6", "DOM"],
         "allowJs": true,
         "outDir": "build",
         "strict": false,
@@ -10,7 +10,6 @@
         "esModuleInterop": true,
         "resolveJsonModule": true,
         "moduleResolution": "node",
-        "typeRoots": ["node_modules/@types", "types"],
         "types": ["node", "express", "jest"],
         "baseUrl": ".",
         "paths": {
@@ -25,5 +24,5 @@
     },
     "ts-node": {
         "require": ["tsconfig-paths/register"]
-    }
+    },
 }
