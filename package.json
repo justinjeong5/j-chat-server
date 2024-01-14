@@ -9,7 +9,7 @@
     },
     "scripts": {
         "dev": "npx nodemon",
-        "start": "NODE_ENV=production node -r ts-node/register -r tsconfig-paths/register ./build/server/index.js",
+        "start": "npm run build && pm2 start ecosystem.config.js --env production",
         "build": "rimraf ./build && tsc",
         "jest": "jest",
         "test": "npm run lint && npm run prettier && npm run jest",
@@ -43,6 +43,7 @@
         "jsonwebtoken": "^9.0.2",
         "lodash": "^4.17.21",
         "mongoose": "^7.5.0",
+        "pm2": "^5.3.0",
         "rimraf": "^5.0.1",
         "socket.io": "^4.7.2",
         "ts-node": "^10.9.1",
@@ -50,8 +51,6 @@
         "typescript": "^5.2.2"
     },
     "devDependencies": {
-        "@types/pretty-format": "^24.3.0",
-        "@types/socket.io-parser": "^3.0.0",
         "@types/bcryptjs": "^2.4.3",
         "@types/cookie-parser": "^1.4.4",
         "@types/cors": "^2.8.14",
@@ -61,6 +60,8 @@
         "@types/lodash": "^4.14.198",
         "@types/mongoose": "^5.11.97",
         "@types/node": "^20.6.3",
+        "@types/pretty-format": "^24.3.0",
+        "@types/socket.io-parser": "^3.0.0",
         "@typescript-eslint/eslint-plugin": "^6.6.0",
         "@typescript-eslint/parser": "^6.6.0",
         "eslint": "^8.49.0",
