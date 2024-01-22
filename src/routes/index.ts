@@ -11,6 +11,10 @@ const routeHandler = (app: Application): void => {
     app.use("/room", room);
     app.use("/user", user);
 
+    app.use("/health", (req, res) => {
+        res.status(201).json({ status: "ok" });
+    });
+
     app.use((req, res, next) => {
         next(notFound());
     });
