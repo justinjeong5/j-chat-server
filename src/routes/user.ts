@@ -82,6 +82,7 @@ R.post(
             domain: process.env.DOMAIN,
             httpOnly: false,
             sameSite: "lax",
+            secure: true,
             maxAge: 24 * 3600 * 1000,
         });
 
@@ -118,6 +119,7 @@ R.post(
             domain: process.env.DOMAIN,
             httpOnly: false,
             sameSite: "lax",
+            secure: true,
             maxAge: -1,
         });
         res.json({ message: "로그아웃 되었습니다." });
