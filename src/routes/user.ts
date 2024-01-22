@@ -80,7 +80,8 @@ R.post(
 
         res.cookie("j_chat_access_token", token, {
             domain: process.env.DOMAIN,
-            sameSite: "lax",
+            secure: true,
+            sameSite: "none",
             maxAge: 24 * 3600 * 1000,
         });
 
@@ -115,7 +116,8 @@ R.post(
 
         res.cookie("j_chat_access_token", null, {
             domain: process.env.DOMAIN,
-            sameSite: "lax",
+            secure: true,
+            sameSite: "none",
             maxAge: -1,
         });
         res.json({ message: "로그아웃 되었습니다." });
