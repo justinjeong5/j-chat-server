@@ -81,7 +81,7 @@ R.post(
         res.cookie("j_chat_access_token", token, {
             domain: process.env.DOMAIN,
             httpOnly: false,
-            sameSite: "lax",
+            sameSite: "none",
             secure: true,
             maxAge: 24 * 3600 * 1000,
         });
@@ -118,7 +118,7 @@ R.post(
         res.cookie("j_chat_access_token", null, {
             domain: process.env.DOMAIN,
             httpOnly: false,
-            sameSite: "lax",
+            sameSite: "none",
             secure: true,
             maxAge: -1,
         });
