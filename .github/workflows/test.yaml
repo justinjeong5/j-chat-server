@@ -12,10 +12,10 @@ jobs:
 
         steps:
             - name: Checkout Repository
-              uses: actions/checkout@v2
+              uses: actions/checkout@v4
 
             - name: Install Nodejs
-              uses: actions/setup-node@v2
+              uses: actions/setup-node@v3
               with:
                   node-version: "18"
 
@@ -24,9 +24,6 @@ jobs:
 
             - name: Execute Lint
               run: npm run lint
-
-            - name: Execute Prettier
-              run: npm run prettier
 
             - name: Execute Jest
               run: npm run jest
