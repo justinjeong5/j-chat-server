@@ -25,5 +25,8 @@ jobs:
             - name: Execute Lint
               run: npm run lint
 
+            - name: Execute Prettier
+              run: npm run format
+
             - name: Execute Jest
               run: npm run jest
