@@ -21,6 +21,7 @@ const userSchema = new Schema({
     likes: [{ type: Schema.Types.ObjectId, ref: "Message" }],
     comments: [{ type: Schema.Types.ObjectId, ref: "Message" }],
 
+    active: { type: Boolean, default: false },
     last_login: { type: Date, default: Date.now },
     login_stamp: { type: Date, default: Date.now },
     updated_at: { type: Date, default: Date.now },
@@ -51,8 +52,6 @@ userSchema.pre(["updateOne", "findOneAndUpdate"], async function (next) {
         next();
     }
 
-    // const user = await this.findOne({ _id: updatedUser._id });
-    // this.set({ old_password: user.password });
     const updatedPassword = await bcrypt.hash(updatedUser.password, 10);
     this.set({ password: updatedPassword });
     this.set({ updated_at: Date.now() });

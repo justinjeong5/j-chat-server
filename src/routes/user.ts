@@ -126,6 +126,45 @@ R.post(
     },
 );
 
+R.get(
+    "/users",
+    auth,
+    async (req: IAuthRequest, res: Response): Promise<void> => {
+        const { page, pageSize, ...restQuery } = req.query;
+
+        const pageNumber = parseInt(page as string, 10) || 0;
+        const itemsPerPage = parseInt(pageSize as string, 10) || 10;
+        const skip = pageNumber * itemsPerPage;
+
+        const totalItems = await User.countDocuments();
+        const docs = await User.find(restQuery)
+            .skip(skip)
+            .limit(itemsPerPage)
+            .exec();
+
+        res.status(200).json({
+            results: docs
+                .map(doc => doc.toJSON())
+                .map(
+                    ({
+                        password,
+                        old_password,
+                        rooms,
+                        stars,
+                        dialog,
+                        likes,
+                        comments,
+                        ...rest
+                    }) => ({
+                        ...rest,
+                    }),
+                ),
+            count: docs.length,
+            hasMore: totalItems > skip + itemsPerPage,
+        });
+    },
+);
+
 R.patch(
     "/:userId",
     auth,
@@ -226,19 +265,6 @@ R.get(
         }
 
         res.status(200).json(user.toJSON());
-    },
-);
-
-R.get(
-    "/users",
-    auth,
-    async (req: IAuthRequest, res: Response): Promise<void> => {
-        const docs = await User.find();
-
-        res.status(200).json({
-            results: docs.map(doc => doc.toJSON()),
-            count: docs.length,
-        });
     },
 );
 
