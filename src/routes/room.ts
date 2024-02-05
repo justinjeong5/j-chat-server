@@ -225,11 +225,16 @@ R.post(
             return;
         }
 
+        let room;
         const { id, ...body } = req.body;
-        const room = await (
-            await Room.create({ ...body, users: [req.user._id] })
-        ).save();
-
+        if (id) {
+            await Room.insertMany([{ _id: id, ...body }]);
+            room = await Room.findById(id);
+        } else {
+            room = await (
+                await Room.create({ ...body, users: [req.user._id] })
+            ).save();
+        }
         await (
             await History.create({
                 user_id: req.user._id,
