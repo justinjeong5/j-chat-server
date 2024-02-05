@@ -107,6 +107,10 @@ R.post(
     "/logout",
     auth,
     async (req: IAuthRequest, res: Response): Promise<void> => {
+        await User.findByIdAndUpdate(req.user._id, {
+            $set: { active: false },
+        }).exec();
+
         await (
             await UserEventLog.create({
                 user_id: req.user._id,
