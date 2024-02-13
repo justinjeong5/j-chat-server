@@ -6,8 +6,9 @@ const messageSchema = new Schema({
     roomId: Schema.Types.ObjectId,
     writer: { type: Schema.Types.ObjectId, ref: "User" },
 
-    content: { type: String, default: "" },
     type: { type: String, default: "plain" },
+    content: { type: String, default: "" },
+    image: { type: String, default: "" },
 
     stars: [{ type: Schema.Types.ObjectId, ref: "User" }],
     likes: [{ type: Schema.Types.ObjectId, ref: "User" }],
