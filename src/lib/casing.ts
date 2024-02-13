@@ -1,7 +1,8 @@
 import _ from "lodash";
+import { TCommon } from "types/common.type";
 
-function convertToCamelCase(obj: any): any {
-    function handleFieldId(key: any, value: any) {
+function convertToCamelCase(obj: TCommon): TCommon {
+    function handleFieldId(key: TCommon, value: TCommon) {
         if (key === "_id") {
             return { id: value };
         }
@@ -17,7 +18,7 @@ function convertToCamelCase(obj: any): any {
     if (obj !== null && _.isObject(obj)) {
         return _.reduce(
             obj,
-            (r: { [key: string]: any }, v: any, k: string) => ({
+            (r: { [key: string]: TCommon }, v: TCommon, k: string) => ({
                 ...r,
                 ...handleFieldId(k, v),
             }),
@@ -27,14 +28,14 @@ function convertToCamelCase(obj: any): any {
     return obj;
 }
 
-function convertToSnakeCase(obj: any): any {
+function convertToSnakeCase(obj: TCommon): TCommon {
     if (_.isArray(obj)) {
         return obj.map(v => convertToSnakeCase(v));
     }
     if (obj !== null && _.isObject(obj)) {
         return _.reduce(
             obj,
-            (r: { [key: string]: any }, v: any, k: string) => ({
+            (r: { [key: string]: TCommon }, v: TCommon, k: string) => ({
                 ...r,
                 ...{ [_.snakeCase(k)]: convertToSnakeCase(v) },
             }),

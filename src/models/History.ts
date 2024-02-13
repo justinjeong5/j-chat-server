@@ -14,6 +14,7 @@ const historySchema = new Schema({
 });
 
 const History = mongoose.model("History", historySchema);
+// eslint-disable-next-line no-console
 History.watch().on("change", data => console.log(new Date(), data));
 
 export default History;

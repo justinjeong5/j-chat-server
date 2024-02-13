@@ -1,4 +1,6 @@
-const isFalsy = (value: any): boolean => {
+import { TCommon } from "types/common.type";
+
+const isFalsy = (value: TCommon): boolean => {
     return (
         value === "false" ||
         value === "null" ||

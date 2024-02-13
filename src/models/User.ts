@@ -1,5 +1,6 @@
 import bcrypt from "bcryptjs";
 import mongoose from "mongoose";
+import { TUser } from "types/user.type";
 
 const { Schema } = mongoose;
 
@@ -29,7 +30,7 @@ const userSchema = new Schema({
 });
 
 userSchema.set("toJSON", {
-    transform(_, ret: any): any {
+    transform(_, ret: TUser): TUser {
         const copiedDoc = ret;
 
         delete copiedDoc.password;
@@ -39,26 +40,30 @@ userSchema.set("toJSON", {
     },
 });
 
-userSchema.pre("save", async function (next) {
+userSchema.pre("save", async function callback(next) {
     if (this.isModified("password")) {
         this.password = await bcrypt.hash(this.password, 10);
     }
     next();
 });
 
-userSchema.pre(["updateOne", "findOneAndUpdate"], async function (next) {
-    const updatedUser = Object(this.getUpdate());
-    if (!updatedUser.password) {
-        next();
-    }
+userSchema.pre(
+    ["updateOne", "findOneAndUpdate"],
+    async function callback(next) {
+        const updatedUser = Object(this.getUpdate());
+        if (!updatedUser.password) {
+            next();
+        }
 
-    const updatedPassword = await bcrypt.hash(updatedUser.password, 10);
-    this.set({ password: updatedPassword });
-    this.set({ updated_at: Date.now() });
-    next();
-});
+        const updatedPassword = await bcrypt.hash(updatedUser.password, 10);
+        this.set({ password: updatedPassword });
+        this.set({ updated_at: Date.now() });
+        next();
+    },
+);
 
 const User = mongoose.model("User", userSchema);
+// eslint-disable-next-line no-console
 User.watch().on("change", data => console.log(new Date(), data));
 
 export default User;

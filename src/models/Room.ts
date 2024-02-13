@@ -16,6 +16,7 @@ const roomSchema = new Schema({
 });
 
 const Room = mongoose.model("Room", roomSchema);
+// eslint-disable-next-line no-console
 Room.watch().on("change", data => console.log(new Date(), data));
 
 export default Room;

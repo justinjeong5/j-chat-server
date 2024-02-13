@@ -1,8 +1,9 @@
 import User from "@models/User";
 import { Server, Socket } from "socket.io";
+import { TUser } from "types/user.type";
 
 export function userLogin(io: Server, client: Socket) {
-    client.on("emitLogin", async (data: any) => {
+    client.on("emitLogin", async (data: TUser) => {
         await User.findByIdAndUpdate(data.id, {
             $set: { active: true },
         }).exec();
@@ -11,7 +12,7 @@ export function userLogin(io: Server, client: Socket) {
 }
 
 export function userLogout(io: Server, client: Socket) {
-    client.on("emitLogout", async (data: any) => {
+    client.on("emitLogout", async (data: TUser) => {
         await User.findByIdAndUpdate(data.id, {
             $set: { active: false },
         }).exec();

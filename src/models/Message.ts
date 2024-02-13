@@ -19,6 +19,7 @@ const messageSchema = new Schema({
 });
 
 const Message = mongoose.model("Message", messageSchema);
+// eslint-disable-next-line no-console
 Message.watch().on("change", data => console.log(new Date(), data));
 
 export default Message;

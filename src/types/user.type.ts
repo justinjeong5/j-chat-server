@@ -7,13 +7,15 @@ export type TGeneralUser = {
     description?: string;
     avatar?: string;
 
-    lastLogin?: Date;
-    updatedAt?: Date;
-    createdAt?: Date;
     active?: boolean;
+    last_login?: Date;
+    login_stamp?: Date;
+    updated_at?: Date;
+    created_at?: Date;
 };
 
 export type TUser = {
+    old_password?: string;
     password?: string;
 
     rooms?: Array<object>;
