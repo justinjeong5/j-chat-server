@@ -28,10 +28,20 @@ export function submitMessage(io: Server, client: Socket) {
 
 export function typingMessage(io: Server, client: Socket) {
     client.on("typingMessage", async (data: any) => {
-        io.to(data.roomId).emit("typingMessage", { user: data.username });
+        io.to(data.roomId).emit("typingMessage", {
+            user: {
+                id: data.user.id,
+                username: data.user.username,
+            },
+        });
     });
     client.on("typingDone", async (data: any) => {
-        io.to(data.roomId).emit("typingDone", { user: data.username });
+        io.to(data.roomId).emit("typingDone", {
+            user: {
+                id: data.user.id,
+                username: data.user.username,
+            },
+        });
     });
 }
 
