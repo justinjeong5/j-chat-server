@@ -3,10 +3,16 @@ import History from "@models/History";
 import Message from "@models/Message";
 import Room from "@models/Room";
 import { Server, Socket } from "socket.io";
-import { TJoinRoom, TLeaveRoom } from "types/room.type";
+import {
+    TEnterRoom,
+    TExitRoom,
+    TJoinRoom,
+    TLeaveRoom,
+    TRoom,
+} from "types/room.type";
 
 export function joinRoom(io: Server, client: Socket) {
-    client.on("enterRoom", async data => {
+    client.on("enterRoom", async (data: TEnterRoom) => {
         const room = await Room.findById(data.roomId).exec();
         if (!room) {
             io.emit("SocketError", "존재하지 않는 대화방입니다.");
@@ -47,7 +53,7 @@ export function joinRoom(io: Server, client: Socket) {
     });
 }
 export function leaveRoom(io: Server, client: Socket) {
-    client.on("exitRoom", async data => {
+    client.on("exitRoom", async (data: TExitRoom) => {
         const room = await Room.findById(data.roomId).exec();
         if (!room) {
             client.emit("SocketError", "존재하지 않는 대화방입니다.");
@@ -88,7 +94,14 @@ export function leaveRoom(io: Server, client: Socket) {
     });
 }
 
+export function roomPost(io: Server, client: Socket) {
+    client.on("roomPosting", async (data: TRoom) => {
+        io.emit("roomPosted", data);
+    });
+}
+
 export default function registerRoomSocket(io: Server, client: Socket) {
     joinRoom(io, client);
     leaveRoom(io, client);
+    roomPost(io, client);
 }
