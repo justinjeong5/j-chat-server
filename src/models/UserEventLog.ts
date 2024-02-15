@@ -11,6 +11,7 @@ const userEventLogSchema = new Schema({
 });
 
 const UserEventLog = mongoose.model("UserEventLog", userEventLogSchema);
+// eslint-disable-next-line no-console
 UserEventLog.watch().on("change", data => console.log(new Date(), data));
 
 export default UserEventLog;

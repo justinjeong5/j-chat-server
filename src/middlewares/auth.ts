@@ -58,6 +58,7 @@ const authMiddleware = async (
         Object.assign(req, { user: user.toJSON() });
         next(null);
     } catch (error) {
+        // eslint-disable-next-line no-console
         console.error(error);
         next(unknownError());
     }

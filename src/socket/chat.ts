@@ -3,9 +3,11 @@ import Message from "@models/Message";
 import Room from "@models/Room";
 import User from "@models/User";
 import { Server, Socket } from "socket.io";
+import { TMessage } from "types/message.type";
+import { TGeneralUser } from "types/user.type";
 
 export function submitMessage(io: Server, client: Socket) {
-    client.on("submitMessage", async (data: any) => {
+    client.on("submitMessage", async (data: TMessage) => {
         const room = await Room.findById(data.roomId).exec();
         if (!room) {
             client.emit("SocketError", "존재하지 않는 대화방입니다.");
@@ -27,12 +29,28 @@ export function submitMessage(io: Server, client: Socket) {
 }
 
 export function typingMessage(io: Server, client: Socket) {
-    client.on("typingMessage", async (data: any) => {
-        io.to(data.roomId).emit("typingMessage", { user: data.username });
-    });
-    client.on("typingDone", async (data: any) => {
-        io.to(data.roomId).emit("typingDone", { user: data.username });
-    });
+    client.on(
+        "typingMessage",
+        async (data: { roomId: string; user: TGeneralUser }) => {
+            io.to(data.roomId).emit("typingMessage", {
+                user: {
+                    id: data.user.id,
+                    username: data.user.username,
+                },
+            });
+        },
+    );
+    client.on(
+        "typingDone",
+        async (data: { roomId: string; user: TGeneralUser }) => {
+            io.to(data.roomId).emit("typingDone", {
+                user: {
+                    id: data.user.id,
+                    username: data.user.username,
+                },
+            });
+        },
+    );
 }
 
 export default function registerChatSocket(io: Server, socket: Socket) {
