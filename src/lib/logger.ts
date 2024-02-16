@@ -69,4 +69,14 @@ export default class Logger {
             ].filter(Boolean),
         );
     }
+
+    static text(body: object, timestamp = new Date()): void {
+        console.log(
+            ...[
+                chalk.gray("[text]"),
+                chalk.gray(format(timestamp, "hh:mm:ss")),
+                JSON.stringify(body),
+            ],
+        );
+    }
 }
