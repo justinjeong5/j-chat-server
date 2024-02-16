@@ -2,6 +2,7 @@
 import { generateToken } from "@lib/api/jsonWebToken";
 import isFalsy from "@lib/compare/isFalsy";
 import isValidObjectId from "@lib/compare/isValidObjectId";
+import Logger from "@liblogger";
 import auth from "@middlewares/auth";
 import History from "@models/History";
 import User from "@models/User";
@@ -14,9 +15,13 @@ import {
     parameterRequired,
     userInvalidCredentials,
 } from "lib/exception/error";
+/* eslint-disable import/no-extraneous-dependencies */
+import NodeCache from "node-cache";
+import nodemailer from "nodemailer";
 import { IAuthRequest } from "types/response.type";
 
 const R = express();
+const authCodeCache = new NodeCache({ stdTTL: 5 * 60 });
 
 R.get(
     "/init",
@@ -27,12 +32,50 @@ R.get(
 );
 
 R.post(
+    "/auth/email",
+    async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+        if (isFalsy(req.body.email)) {
+            next(parameterRequired("email"));
+            return;
+        }
+        const authCode = Math.floor(100000 + Math.random() * 900000).toString();
+        authCodeCache.set(req.body.email, authCode);
+
+        const transporter = nodemailer.createTransport({
+            service: "gmail",
+            auth: {
+                user: process.env.SERVICE_EMAIL_ID,
+                pass: process.env.SERVICE_EMAIL_PW,
+            },
+        });
+
+        const info = await transporter.sendMail({
+            from: process.env.SERVICE_EMAIL_ID,
+            to: req.body.email,
+            subject: "[JChat] 회원가입 인증 코드",
+            text: `인증 코드는 ${authCode} 입니다.`,
+        });
+        Logger.text(info);
+
+        res.json({ message: "인증 코드가 발송되었습니다." });
+    },
+);
+
+R.post(
     "/signup",
     async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         const user = await User.findOne({ email: req.body.email });
 
         if (user) {
             next(alreadyExist("이미 존재하는 이메일입니다."));
+            return;
+        }
+
+        const savedCode = authCodeCache.get(req.body.email);
+        if (savedCode === req.body.code) {
+            authCodeCache.del(req.body.email);
+        } else {
+            next(userInvalidCredentials("인증 코드가 일치하지 않습니다."));
             return;
         }
 
