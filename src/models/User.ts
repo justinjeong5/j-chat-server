@@ -24,7 +24,6 @@ const userSchema = new Schema({
 
     active: { type: Boolean, default: false },
     last_login: { type: Date, default: Date.now },
-    login_stamp: { type: Date, default: Date.now },
     updated_at: { type: Date, default: Date.now },
     created_at: { type: Date, default: Date.now },
 });
@@ -35,7 +34,6 @@ userSchema.set("toJSON", {
 
         delete copiedDoc.password;
         delete copiedDoc.old_password;
-        delete copiedDoc.login_stamp;
         return copiedDoc;
     },
 });

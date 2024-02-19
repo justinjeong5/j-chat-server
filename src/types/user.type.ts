@@ -9,7 +9,6 @@ export type TGeneralUser = {
 
     active?: boolean;
     last_login?: Date;
-    login_stamp?: Date;
     updated_at?: Date;
     created_at?: Date;
 };

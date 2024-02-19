@@ -27,6 +27,9 @@ R.get(
     "/init",
     auth,
     async (req: IAuthRequest, res: Response): Promise<void> => {
+        await User.findByIdAndUpdate(req.user._id, {
+            last_login: Date.now(),
+        }).exec();
         res.json(req.user);
     },
 );
@@ -130,8 +133,7 @@ R.post(
         });
 
         await User.findByIdAndUpdate(user._id, {
-            login_stamp: Date.now(),
-            last_login: user.login_stamp,
+            last_login: Date.now(),
         }).exec();
 
         await (
