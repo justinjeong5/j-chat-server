@@ -44,12 +44,12 @@ jobs:
             - name: Deploy to EC2
               uses: appleboy/ssh-action@v1.0.3
               env: 
-                  JWT_SECRET=${{ secrets.JWT_SECRET }}
-                  MONGODB_DB_NAME=${{ secrets.MONGODB_DB_NAME }}
-                  MONGODB_URL=${{ secrets.MONGODB_URL }}
-                  DOMAIN=${{ secrets.DOMAIN }}
-                  SERVICE_EMAIL_ID=${{ secrets.SERVICE_EMAIL_ID }}
-                  SERVICE_EMAIL_PW=${{ secrets.SERVICE_EMAIL_PW }}
+                  JWT_SECRET: ${{ secrets.JWT_SECRET }}
+                  MONGODB_DB_NAME: ${{ secrets.MONGODB_DB_NAME }}
+                  MONGODB_URL: ${{ secrets.MONGODB_URL }}
+                  DOMAIN: ${{ secrets.DOMAIN }}
+                  SERVICE_EMAIL_ID: ${{ secrets.SERVICE_EMAIL_ID }}
+                  SERVICE_EMAIL_PW: ${{ secrets.SERVICE_EMAIL_PW }}
               with:
                   host: ${{ secrets.SSH_HOST }}
                   username: ${{ secrets.SSH_USERNAME }}
