@@ -53,9 +53,10 @@ jobs:
               with:
                   host: ${{ secrets.SSH_HOST }}
                   username: ${{ secrets.SSH_USERNAME }}
-                  key: ${{ secrets.SSH_PRIVATE_KEY }}
+                  passphrase: ${{ secrets.SSH_PRIVATE_KEY }}
                   envs: JWT_SECRET, MONGODB_DB_NAME, MONGODB_URL, DOMAIN, SERVICE_EMAIL_ID, SERVICE_EMAIL_PW
                   script: |
+                      whoami
                       pwd
                       cd /j-chat-server
                       ls -al
