@@ -1,0 +1,64 @@
+name: Deploy Server to EC2
+
+on:
+    push:
+        branches:
+            - main
+
+jobs:
+    test:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout Repository
+              uses: actions/checkout@v4
+
+            - name: Set up Node.js
+              uses: actions/setup-node@v4
+              with:
+                  node-version: 18
+
+            - name: Install dependencies
+              run: npm install
+
+            - name: Test
+              run: npm run test
+
+            - name: Build
+              run: npm run build
+
+    deploy:
+        runs-on: ubuntu-latest
+        needs: test
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v4
+
+            - name: Deploy to EC2
+              uses: appleboy/ssh-action@v1.0.3
+              env:
+                  JWT_SECRET: ${{ secrets.JWT_SECRET }}
+                  MONGODB_DB_NAME: ${{ secrets.MONGODB_DB_NAME }}
+                  MONGODB_URL: ${{ secrets.MONGODB_URL }}
+                  DOMAIN: ${{ secrets.DOMAIN }}
+                  SERVICE_EMAIL_ID: ${{ secrets.SERVICE_EMAIL_ID }}
+                  SERVICE_EMAIL_PW: ${{ secrets.SERVICE_EMAIL_PW }}
+              with:
+                  host: ${{ secrets.SSH_HOST }}
+                  username: ${{ secrets.SSH_USERNAME }}
+                  key: ${{ secrets.SSH_PRIVATE_KEY }}
+                  envs: JWT_SECRET, MONGODB_DB_NAME, MONGODB_URL, DOMAIN, SERVICE_EMAIL_ID, SERVICE_EMAIL_PW
+                  script: |
+                      cd j-chat-server
+                      rm -f .env
+                      touch .env
+                      echo "JWT_SECRET=$JWT_SECRET" >> .env
+                      echo "MONGODB_DB_NAME=$MONGODB_DB_NAME" >> .env
+                      echo "MONGODB_URL=$MONGODB_URL" >> .env
+                      echo "DOMAIN=$DOMAIN" >> .env
+                      echo "SERVICE_EMAIL_ID=$SERVICE_EMAIL_ID" >> .env
+                      echo "SERVICE_EMAIL_PW=$SERVICE_EMAIL_PW" >> .env
+                      export NVM_DIR=~/.nvm
+                      source ~/.nvm/nvm.sh
+                      nvm use
+                      npm install
+                      npm start
