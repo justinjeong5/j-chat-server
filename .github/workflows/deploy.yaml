@@ -3,7 +3,6 @@ name: Deploy Server to EC2
 on:
     push:
         branches:
-            - j-047-ci-cd
             - main
 
 jobs:
@@ -29,7 +28,7 @@ jobs:
 
     deploy:
         runs-on: ubuntu-latest
-        # needs: test
+        needs: test
         steps:
             - name: Checkout repository
               uses: actions/checkout@v4
