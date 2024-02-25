@@ -56,10 +56,7 @@ jobs:
                   key: ${{ secrets.SSH_PRIVATE_KEY }}
                   envs: JWT_SECRET, MONGODB_DB_NAME, MONGODB_URL, DOMAIN, SERVICE_EMAIL_ID, SERVICE_EMAIL_PW
                   script: |
-                      whoami
-                      pwd
-                      cd /j-chat-server
-                      ls -al
+                      cd j-chat-server
                       rm -f .env
                       touch .env
                       echo "JWT_SECRET=$JWT_SECRET" >> .env
