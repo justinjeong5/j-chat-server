@@ -57,6 +57,9 @@ jobs:
                   envs: JWT_SECRET, MONGODB_DB_NAME, MONGODB_URL, DOMAIN, SERVICE_EMAIL_ID, SERVICE_EMAIL_PW
                   script: |
                       cd j-chat-server
+                      export NVM_DIR=~/.nvm
+                      source ~/.nvm/nvm.sh
+                      nvm use
                       rm -f .env
                       touch .env
                       echo "JWT_SECRET=$JWT_SECRET" >> .env
@@ -65,6 +68,5 @@ jobs:
                       echo "DOMAIN=$DOMAIN" >> .env
                       echo "SERVICE_EMAIL_ID=$SERVICE_EMAIL_ID" >> .env
                       echo "SERVICE_EMAIL_PW=$SERVICE_EMAIL_PW" >> .env
-                      nvm use
                       npm ci
                       npm start
