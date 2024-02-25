@@ -65,6 +65,5 @@ jobs:
                       echo "DOMAIN=$DOMAIN" >> .env
                       echo "SERVICE_EMAIL_ID=$SERVICE_EMAIL_ID" >> .env
                       echo "SERVICE_EMAIL_PW=$SERVICE_EMAIL_PW" >> .env
-                      nvm use
                       npm install
                       npm start
