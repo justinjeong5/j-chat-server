@@ -41,6 +41,18 @@ jobs:
               with:
                   node-version: 18
 
+            - name: Check Environment Variables
+              run: |
+                  echo ${{ secrets.SSH_HOST }}
+                  echo ${{ secrets.SSH_USERNAME }}
+                  echo ${{ secrets.SSH_PRIVATE_KEY }}
+                  echo ${{ secrets.JWT_SECRET }}
+                  echo ${{ secrets.MONGODB_DB_NAME }}
+                  echo ${{ secrets.MONGODB_URL }}
+                  echo ${{ secrets.DOMAIN }}
+                  echo ${{ secrets.SERVICE_EMAIL_ID }}
+                  echo ${{ secrets.SERVICE_EMAIL_PW }}
+
             - name: Deploy to EC2
               uses: appleboy/ssh-action@v1.0.3
               env: 
