@@ -66,8 +66,5 @@ jobs:
                       echo "SERVICE_EMAIL_ID=$SERVICE_EMAIL_ID" >> .env
                       echo "SERVICE_EMAIL_PW=$SERVICE_EMAIL_PW" >> .env
                       echo "TEST=123" >> .env
-                      cat .env
-                      git checkout main
-                      git pull
                       npm install
                       npm start
