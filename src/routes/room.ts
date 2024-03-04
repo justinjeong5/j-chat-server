@@ -95,7 +95,7 @@ R.post(
             $push: { users: req.body.users },
         });
         await User.findByIdAndUpdate(req.body.users, {
-            $push: { room: room._id },
+            $push: { rooms: room._id },
         });
         const doc = await Room.findById(room._id)
             .populate("users")
